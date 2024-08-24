@@ -2,6 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/*Meant for shadcn buttons*/
+@layer components {
+  .a-primary {
+    @apply py-2 whitespace-nowrap text-black dark:text-white dark:hover:text-zinc-950 hover:text-zinc-950 font-light hover:bg-zinc-300 px-1 rounded-xl transition-colors duration-150
+  }
+
+  .a-secondary {
+    @apply py-2 whitespace-nowrap rounded-xl transition-colors dark:bg-zinc-300 bg-zinc-700 hover:dark:bg-zinc-300/80 hover:bg-zinc-800 p-2 text-white font-light hover:text-zinc-50 dark:text-black duration-300
+  }
+
+  .apply-colors-primary {
+    @apply bg-zinc-400 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 transition-all duration-150
+  }
+
+  .apply-colors-secondary {
+    @apply bg-zinc-200 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150
+  }
+
+  .text-primary {
+    @apply text-zinc-900 dark:text-zinc-200 hover:text-zinc-800 dark:hover:text-zinc-300
+  }
+
+  .text-secondary {
+    @apply text-zinc-700 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-300
+  }
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Taviraj:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 :root {
@@ -10,7 +37,7 @@
   font-style: normal;
   font-weight: 400;
   margin: 0;
-  padding:0;
+  padding: 0;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -27,6 +54,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -47,9 +75,11 @@ h1 {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }

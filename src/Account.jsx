@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import SignedInNavbar from '@/components/fullComponents/SignedInNavBar'
 
 export default function Account({ session }) {
   const [loading, setLoading] = useState(true)
@@ -11,27 +12,31 @@ export default function Account({ session }) {
     let ignore = false
 
     async function getProfile() {
+    try {
       setLoading(true)
       const { user } = session
 
-      const { data, error } = await supabase
+      let { data, error, status } = await supabase
         .from('profiles')
         .select(`username, website, avatar_url`)
         .eq('id', user.id)
         .single()
 
-      if (!ignore) {
-        if (error) {
-          console.warn(error)
-        } else if (data) {
-          setUsername(data.username)
-          setWebsite(data.website)
-          setAvatarUrl(data.avatar_url)
-        }
+      if (error && status !== 406) {
+        throw error
       }
 
+      if (data) {
+        setUsername(data.username)
+        setWebsite(data.website)
+        setAvatarUrl(data.avatar_url)
+      }
+    } catch (error) {
+      alert(error.message)
+    } finally {
       setLoading(false)
     }
+  }
 
     getProfile()
 
@@ -65,6 +70,8 @@ export default function Account({ session }) {
   }
 
   return (
+    <div className="container px-8 py-3">
+      <SignedInNavbar />
     <form onSubmit={updateProfile} className="form-widget">
       <Avatar
       url={avatar_url}
@@ -110,5 +117,6 @@ export default function Account({ session }) {
         </button>
       </div>
     </form>
+    </div>
   )
 }
