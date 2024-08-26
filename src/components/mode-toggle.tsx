@@ -8,11 +8,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useTheme } from "@/components/theme-provider"
-import { cn } from "@/lib/utils"
 
 export function ModeToggle({ className }: { className?: string }) {
   const { setTheme } = useTheme()  
-  const [light, setLight] = useState<Boolean>(false)
+  const [light, setLight] = useState<Boolean>(true)
   const handleTheme = () => {
     setLight(!light);
     if (light) setTheme("light");

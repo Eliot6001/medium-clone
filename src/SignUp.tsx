@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { supabase } from './supabaseClient'
-import { useNavigate } from 'react-router-dom'
+import supabase from './supabaseClient.js'
+import { Navigate, useNavigate } from 'react-router-dom'
 import TopNavbar from './components/fullComponents/topNavbar'
 import {
   Card,
@@ -15,70 +15,75 @@ import { Key, Mail } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { LoaderCircle } from 'lucide-react'
 import { useToast } from "@/components/ui/use-toast"
+import { useSession } from "./context/SupabaseContext";
 
-export default function Auth() {
+export default function SignUp() {
   const [loading, setLoading] = useState(false)
+  const { session } = useSession();
+  if (session) return <Navigate to="/" />;
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState(''); // Add password state
-  const [allowed, setAllowed] = useState(false);
+  const [password, setPassword] = useState('')
+  const [allowed, setAllowed] = useState(false)
 
   const { toast } = useToast()
   const navigate = useNavigate()
 
-  const handlePassword = (password) => {
-    const allowedPattern = /^[a-zA-Z0-9_\-\.]+$/;
+  const handlePassword = (password: string) => {
+    const allowedPattern = /^[a-zA-Z0-9_\-\.]+$/
     if (!allowedPattern.test(password)) {
       toast({
         variant: 'destructive',
         description: 'Password contains invalid characters. Only alphanumeric characters, underscores (_), hyphens (-), and periods (.) are allowed.',
-        duration: 1500
+        duration: 1500,
       })
       setAllowed(false)
-    }
-    else {
+    } else {
       setAllowed(true)
     }
   }
 
-  const handleLogin = async (event) => {
+  const handleSignUp = async (event: any) => {
     event.preventDefault()
     setLoading(true)
     handlePassword(password)
     if (allowed) {
-
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      })
 
       if (error) {
-        alert(error.error_description || error.message)
+        toast({
+          variant: 'destructive',
+          description: error.error_description || error.message,
+        })
       } else {
         toast({
           variant: 'primary',
           title: "Success",
-          description: `Welcome ${data.email}`,
+          description: `Welcome ${email}! Check your email to confirm your account.`,
         })
         navigate('/home')
       }
       setLoading(false)
-    }
-    else {
+    } else {
       setLoading(false)
     }
   }
 
   return (
-    /*ill need to implement PKCE flow*/
     <div className="flex flex-col min-h-screen bg-background">
       <TopNavbar />
       <div className="w-full flex-1 flex items-center justify-center p-4 apply-colors-primary">
         <Card className="shadow-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150 h-96 flex flex-col rounded" style={{ width: '40%' }}>
           <CardHeader>
-            <CardTitle className="dark:text-zinc-100 text-zinc-900">Sign in to your account</CardTitle>
+            <CardTitle className="dark:text-zinc-100 text-zinc-900">Sign up for an account</CardTitle>
             <CardDescription className="text-zinc-400 dark:text-zinc-600">
-              Sign in via magic link with your email below
+              Create your account by entering your email and password below
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 flex-row items-center justify-center flex">
-            <form onSubmit={handleLogin} className="space-y-4 flex-grow">
+            <form onSubmit={handleSignUp} className="space-y-4 flex-grow">
               <div className="space-y-1">
                 <label htmlFor="email-address" className="text-sm font-normal">
                   Email address
@@ -107,7 +112,7 @@ export default function Auth() {
                       id="password"
                       name="password"
                       type="password"
-                      autoComplete="current-password"
+                      autoComplete="new-password"
                       required
                       placeholder="Enter your password"
                       value={password}
@@ -126,17 +131,16 @@ export default function Auth() {
                 {loading ? (
                   <LoaderCircle className="animate-spin h-5 w-5 mr-3" />
                 ) : null}
-                {loading ? 'Sending...' : 'Send magic link'}
+                {loading ? 'Signing up...' : 'Sign up'}
               </Button>
               <div className="mt-auto flex-grow" />
             </form>
           </CardContent>
-
-          <CardFooter className="flex justify-center items-center ">
+          <CardFooter className="flex justify-center items-center">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
+              Already have an account?{' '}
               <a href="#" className="text-primary hover:underline">
-                Sign up
+                Sign in
               </a>
             </p>
           </CardFooter>
