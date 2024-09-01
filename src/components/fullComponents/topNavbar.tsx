@@ -15,7 +15,7 @@ const TopNavbar = () => {
               <span className="sr-only">Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="h-screen w-1/3 flex flex-col">
+          <SheetContent side="left" className="px-3 h-screen w-1/3 flex flex-col">
             <Link href="#" className="mr-6 lg:flex" >
               <Logo className="w-8 h-6" />
               <span className="sr-only">Thread</span>

@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import HomePage from "../HomePage";
+import Root from '../root/app'
 import SignInPage from "../Auth";
 import SignUpPage from "../SignUp";
 import NotFoundPage from "../pages/Error404Page";
@@ -16,7 +17,7 @@ const router = createBrowserRouter([
       // Public routes
       {
         path: "/",
-        element: <HomePage />,
+        element: < Root />,
       },
       {
         path: "/login",
@@ -32,11 +33,11 @@ const router = createBrowserRouter([
 
       // Auth Protected routes
       {
-        path: "/",
+        path: "/myaccount",
         element: <AuthProtectedRoute />,
         children: [
           {
-            path: "/protected",
+            path: "",
             element: <Account/>,
           },
         ],
