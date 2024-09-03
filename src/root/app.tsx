@@ -14,10 +14,10 @@ const Rootpage = () => {
           <h1 className="lg:text-5xl text-3xl font-bold leading-tight text-primary">
             Human stories & ideas
           </h1>
-          <p className="mt-4 text-lg text-secondary">
+          <p className="mt-4 text-lg text-secondary text-zinc-800">
             A place to read, write, and deepen your understanding
           </p>
-          <Button className="mt-8 bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 a-secondary">
+          <Button className="mt-8 bg-black text-white px-6 py-3 rounded-full dark:hover:bg-zinc-200 hover:bg-zinc-900 a-secondary">
             Start reading
           </Button>
         </div>
