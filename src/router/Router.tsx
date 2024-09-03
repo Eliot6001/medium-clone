@@ -7,7 +7,7 @@ import NotFoundPage from "../pages/Error404Page";
 import AuthProtectedRoute from "./AuthProtectedRoute";
 import Providers from "../providers/Provider";
 import Account from '../Account'
-
+import Profile from '../Profile'
 const router = createBrowserRouter([
   // I recommend you reflect the routes here in the pages folder
   {
@@ -33,13 +33,17 @@ const router = createBrowserRouter([
 
       // Auth Protected routes
       {
-        path: "/myaccount",
+        path: "/",
         element: <AuthProtectedRoute />,
         children: [
           {
-            path: "",
+            path: "myaccount",
             element: <Account/>,
           },
+          {
+            path: "profile",
+            element: <Profile />
+          }
         ],
       },
     ],

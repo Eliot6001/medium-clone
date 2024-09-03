@@ -7,6 +7,8 @@ export default function Avatar({ url, size, onUpload }) {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
 
+  const [animate, setAnimate] = useState(false);
+
   const { toast } = useToast()
 
   useEffect(() => {
@@ -22,12 +24,7 @@ export default function Avatar({ url, size, onUpload }) {
       const url = URL.createObjectURL(data);
 
       setAvatarUrl(url);
-      toast({
-        variant: 'primary',
-        title: 'Success!',
-        description: 'Your image has been uploaded, Successfully!',
-        duration: 1500
-      })
+      setAnimate(true);
 
     } catch (error) {
       toast({
@@ -44,7 +41,7 @@ export default function Avatar({ url, size, onUpload }) {
 
       if (!event.target.files || event.target.files.length === 0) {
         toast({
-          variant: 'outline',
+          variant: 'destructive',
           description: 'You need to select a file!'
         })
         throw Error("File not selected!")

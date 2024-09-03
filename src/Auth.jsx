@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { useSession } from "./context/SupabaseContext";
 import { supabase } from './supabaseClient'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import TopNavbar from './components/fullComponents/topNavbar'
 import {
   Card,
@@ -21,6 +22,9 @@ export default function Auth() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState(''); // Add password state
   const [allowed, setAllowed] = useState(false);
+
+  const { session } = useSession();
+  if (session) return <Navigate to="/" />;
 
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -52,7 +56,6 @@ export default function Auth() {
         alert(error.error_description || error.message)
       } else {
         toast({
-          variant: 'primary',
           title: "Success",
           description: `Welcome ${data.email}`,
         })
@@ -74,7 +77,7 @@ export default function Auth() {
           <CardHeader>
             <CardTitle className="dark:text-zinc-100 text-zinc-900">Sign in to your account</CardTitle>
             <CardDescription className="text-zinc-400 dark:text-zinc-600">
-              Sign in via magic link with your email below
+              Sign in
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 flex-row items-center justify-center flex">
