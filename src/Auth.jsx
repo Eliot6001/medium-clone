@@ -16,12 +16,15 @@ import { Key, Mail } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { LoaderCircle } from 'lucide-react'
 import { useToast } from "@/components/ui/use-toast"
+import { Separator } from "@/components/ui/separator"
 
 export default function Auth() {
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState(''); // Add password state
   const [allowed, setAllowed] = useState(false);
+
+  const [reset, setReset] = useState(false);
 
   const { session } = useSession();
   if (session) return <Navigate to="/" />;
@@ -44,12 +47,27 @@ export default function Auth() {
     }
   }
 
+  const toggleReset = () => {
+    setReset(!reset);
+  }
+
+  const handleReset = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.href}reset`,
+    })
+    if (error) {
+      toast({
+        variant: 'destructive',
+        description: `There was an error, please try again ${error}`
+      })
+    }
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
     setLoading(true)
     handlePassword(password)
     if (allowed) {
-
       const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
       if (error) {
@@ -73,15 +91,15 @@ export default function Auth() {
     <div className="flex flex-col min-h-screen bg-background">
       <TopNavbar />
       <div className="w-full flex-1 flex items-center justify-center p-4 apply-colors-primary">
-        <Card className="shadow-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150 h-96 flex flex-col rounded" style={{ width: '40%' }}>
+        <Card className="shadow-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150 flex flex-col rounded space-y-4 md:w-[40%] w-80 " >
           <CardHeader>
-            <CardTitle className="dark:text-zinc-100 text-zinc-900">Sign in to your account</CardTitle>
+            <CardTitle className="dark:text-zinc-100 text-zinc-900">{!reset ? 'Sign in to your account' : 'Reset your password!'}</CardTitle>
             <CardDescription className="text-zinc-400 dark:text-zinc-600">
-              Sign in
+              {!reset ? 'Sign in' : 'Recovery'}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 flex-row items-center justify-center flex">
-            <form onSubmit={handleLogin} className="space-y-4 flex-grow">
+            <form onSubmit={!reset ? handleLogin : handleReset} className="space-y-4 flex-grow">
               <div className="space-y-1">
                 <label htmlFor="email-address" className="text-sm font-normal">
                   Email address
@@ -100,7 +118,8 @@ export default function Auth() {
                     style={{ paddingLeft: '2rem' }}
                   />
                 </div>
-                <div className="space-y-1">
+
+                {!reset && <div className={`transition-opacity duration-300 `}>
                   <label htmlFor="password" className="text-sm font-normal">
                     Password
                   </label>
@@ -118,27 +137,36 @@ export default function Auth() {
                       style={{ paddingLeft: '2rem' }}
                     />
                   </div>
-                </div>
+                </div>}
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="py-2 whitespace-nowrap text-black dark:text-white dark:hover:text-zinc-950 hover:text-zinc-950 
-                font-medium hover:bg-zinc-300 px-1 rounded-xl transition-colors duration-300 border border-zinc-400 antialiased dark:border-zinc-200"
+                className="py-2 whitespace-nowrap dark:text-zinc-300 text-zinc-800
+           dark:hover:text-zinc-50 hover:text-zinc-900 font-medium
+           dark:bg-zinc-800 bg-zinc-200 dark:hover:bg-zinc-700 hover:bg-zinc-300
+           px-1 rounded-xl transition-colors duration-150 border
+           dark:border-zinc-600 border-zinc-400 antialiased ml-auto"
               >
                 {loading ? (
                   <LoaderCircle className="animate-spin h-5 w-5 mr-3" />
                 ) : null}
                 {loading ? 'Sending...' : 'Send magic link'}
               </Button>
-              <div className="mt-auto flex-grow" />
+              <p className="text-sm text-muted-foreground">
+                {!reset ? 'Forget your password? ' : 'Sign in? '}
+                <a href="#" className="ml-0.5 font-medium text-primary hover:underline text-grey-600 hover:text-grey-800" onClick={toggleReset}>
+                  { !reset ? "Reset it" : "Login"}
+                </a>
+
+              </p>
+              <Separator />
             </form>
           </CardContent>
-
-          <CardFooter className="flex justify-center items-center ">
-            <p className="text-sm text-muted-foreground">
+          <CardFooter className="flex items-center space-x-2 ">
+            <p className="text-sm text-muted-foreground mr-auto">
               Don't have an account?{' '}
-              <a href="#" className="text-primary hover:underline">
+              <a href="#" className="text-primary hover:underline ml-0.5 font-medium text-grey-600 hover:text-grey-800">
                 Sign up
               </a>
             </p>

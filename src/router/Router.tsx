@@ -8,6 +8,8 @@ import AuthProtectedRoute from "./AuthProtectedRoute";
 import Providers from "../providers/Provider";
 import Account from '../Account'
 import Profile from '../Profile'
+import Reset from '../reset'
+
 const router = createBrowserRouter([
   // I recommend you reflect the routes here in the pages folder
   {
@@ -26,9 +28,14 @@ const router = createBrowserRouter([
       {
         path: "/sign-up",
         element: <SignUpPage />,
-      },{
+      }, {
         path: "/signup",
         element: <SignUpPage />,
+      },
+      {
+        path: "/reset",
+        element: <Reset/>,
+
       },
 
       // Auth Protected routes
@@ -38,7 +45,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "account",
-            element: <Account/>,
+            element: <Account />,
           },
           {
             path: "profile",

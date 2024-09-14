@@ -17,62 +17,18 @@ import { LoaderCircle } from 'lucide-react'
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "./context/SupabaseContext";
 
-export default function SignUp() {
+
+
+const ResetPassword = () => {
   const [loading, setLoading] = useState(false)
   const { session } = useSession();
   if (session) return <Navigate to="/" />;
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [allowed, setAllowed] = useState(false)
 
   const { toast } = useToast()
   const navigate = useNavigate()
 
-  const handlePassword = (password: string) => {
-    const allowedPattern = /^[a-zA-Z0-9_\-\.]+$/
-    if (!allowedPattern.test(password)) {
-      toast({
-        variant: 'destructive',
-        description: 'Password contains invalid characters. Only alphanumeric characters, underscores (_), hyphens (-), and periods (.) are allowed.',
-        duration: 1500,
-      })
-      setAllowed(false)
-    } else {
-      setAllowed(true)
-    }
-  }
-
-  const handleSignUp = async (event: any) => {
-    event.preventDefault()
-    setLoading(true)
-    handlePassword(password)
-    if (allowed) {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      })
-
-      if (error) {
-        toast({
-          variant: 'destructive',
-          description: error.error_description || error.message,
-        })
-      } else {
-        toast({
-          variant: 'primary',
-          title: "Success",
-          description: `Welcome ${email}! Check your email to confirm your account.`,
-        })
-        navigate('/home')
-      }
-      setLoading(false)
-    } else {
-      setLoading(false)
-    }
-  }
-  //
-  //I dont feel safe doing this in Client side lol 
-  //
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <TopNavbar />
@@ -144,13 +100,14 @@ export default function SignUp() {
           <CardFooter className="flex justify-center items-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{' '}
-              <a href="/login"  className="text-primary hover:underline">
+              <a href="/login" className="text-primary hover:underline">
                 Sign in
               </a>
             </p>
           </CardFooter>
         </Card>
       </div>
-    </div>
-  )
+    </div>)
 }
+
+export default ResetPassword

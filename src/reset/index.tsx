@@ -1,7 +1,8 @@
+import React from 'react'
 import { useState } from 'react'
-import supabase from './supabaseClient.js'
 import { Navigate, useNavigate } from 'react-router-dom'
-import TopNavbar from './components/fullComponents/topNavbar'
+import TopNavbar from '@/components/fullComponents/topNavbar'
+import { supabase } from '../supabaseClient'
 import {
   Card,
   CardContent,
@@ -15,18 +16,12 @@ import { Key, Mail } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { LoaderCircle } from 'lucide-react'
 import { useToast } from "@/components/ui/use-toast"
-import { useSession } from "./context/SupabaseContext";
 
-export default function SignUp() {
+const Reset = () => {
   const [loading, setLoading] = useState(false)
-  const { session } = useSession();
-  if (session) return <Navigate to="/" />;
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [allowed, setAllowed] = useState(false)
 
-  const { toast } = useToast()
-  const navigate = useNavigate()
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setconfirmPassword] = useState('')
 
   const handlePassword = (password: string) => {
     const allowedPattern = /^[a-zA-Z0-9_\-\.]+$/
@@ -42,15 +37,17 @@ export default function SignUp() {
     }
   }
 
-  const handleSignUp = async (event: any) => {
+  const Matched = (password: string, password2: string) => password === password2;
+
+  const sendResetPassword = async (event: any) => {
     event.preventDefault()
     setLoading(true)
+
     handlePassword(password)
-    if (allowed) {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      })
+    const passwordsareTheSame = Matched(password, confirmPassword);
+
+    if (allowed && passwordsareTheSame) {
+      const { data, error } =  await supabase.auth.updateUser({ password: password })
 
       if (error) {
         toast({
@@ -61,7 +58,7 @@ export default function SignUp() {
         toast({
           variant: 'primary',
           title: "Success",
-          description: `Welcome ${email}! Check your email to confirm your account.`,
+          description: `You can now login to your account with the new password.`,
         })
         navigate('/home')
       }
@@ -70,56 +67,54 @@ export default function SignUp() {
       setLoading(false)
     }
   }
-  //
-  //I dont feel safe doing this in Client side lol 
-  //
+
+  const [allowed, setAllowed] = useState(false)
+
+  const { toast } = useToast()
+  const navigate = useNavigate()
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <TopNavbar />
       <div className="w-full flex-1 flex items-center justify-center p-4 apply-colors-primary">
         <Card className="shadow-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150 h-96 flex flex-col rounded" style={{ width: '40%' }}>
           <CardHeader>
-            <CardTitle className="dark:text-zinc-100 text-zinc-900">Sign up for an account</CardTitle>
+            <CardTitle className="dark:text-zinc-100 text-zinc-900">Change your password</CardTitle>
             <CardDescription className="text-zinc-400 dark:text-zinc-600">
-              Create your account by entering your email and password below
+              You're about to change your password
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 flex-row items-center justify-center flex">
-            <form onSubmit={handleSignUp} className="space-y-4 flex-grow">
-              <div className="space-y-1">
-                <label htmlFor="email-address" className="text-sm font-normal">
-                  Email address
+            <form onSubmit={sendResetPassword} className="space-y-4 flex-grow">
+              <div className="space-y-2">
+                <label htmlFor="password-address" className="text-sm font-normal">
+                  Password
                 </label>
                 <div className="relative flex items-center dark:text-white text-black font-medium text-xl">
-                  <Mail className="absolute left-0 ml-2 top-1/2 transform -translate-y-1/2 text-muted-foreground" style={{ marginLeft: '0.35rem', height: '1.25rem', width: '1.25rem' }} />
                   <Input
-                    id="email-address"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="password"
                     required
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    style={{ paddingLeft: '2rem' }}
+                    placeholder="Enter your new password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
                 <div className="space-y-1">
                   <label htmlFor="password" className="text-sm font-normal">
-                    Password
+                    Confirm Password
                   </label>
                   <div className="relative flex items-center dark:text-white text-black font-medium text-xl">
-                    <Key className="absolute left-0 ml-2 top-1/2 transform -translate-y-1/2 text-muted-foreground" style={{ marginLeft: '0.35rem', height: '1.25rem', width: '1.25rem' }} />
                     <Input
-                      id="password"
-                      name="password"
+                      id="confirmPassword"
+                      name="confirmPassword"
                       type="password"
-                      autoComplete="new-password"
                       required
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      style={{ paddingLeft: '2rem' }}
+                      placeholder="Confirm your password"
+                      value={confirmPassword}
+                      onChange={(e) => setconfirmPassword(e.target.value)}
                     />
                   </div>
                 </div>
@@ -136,16 +131,16 @@ export default function SignUp() {
                 {loading ? (
                   <LoaderCircle className="animate-spin h-5 w-5 mr-3" />
                 ) : null}
-                {loading ? 'Signing up...' : 'Sign up'}
+                {loading ? 'Submitting...' : 'Submit'}
               </Button>
               <div className="mt-auto flex-grow" />
             </form>
           </CardContent>
           <CardFooter className="flex justify-center items-center">
             <p className="text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <a href="/login"  className="text-primary hover:underline">
-                Sign in
+              Already remembered your password?{' '}
+              <a href="/login" className="text-primary hover:underline">
+                Login
               </a>
             </p>
           </CardFooter>
@@ -154,3 +149,5 @@ export default function SignUp() {
     </div>
   )
 }
+
+export default Reset
