@@ -1,7 +1,7 @@
 
 import TopNavbar from "@/components/fullComponents/topNavbar";
 import { Button } from "@/components/ui/button";
-import Image from "../assets/pexels-evie-shaffer-1259279-8735276.webp"
+import Image from "../assets/img.jpg"
 const Rootpage = () => {
 
   return (
@@ -21,9 +21,12 @@ const Rootpage = () => {
             Start reading
           </Button>
         </div>
-        <span className="lg:flex hidden h-full justify-center lg:w-1/2  ml-auto mt-2">
-          <img src={Image} className="w-1/2 object-contain ml-auto py-2 " alt="Human stories" />
-        </span>
+        <div className="lg:flex hidden h-screen justify-center lg:h-full lg:w-full ml-auto relative">
+          <div className="w-1/2 ml-auto relative">
+            <img src={Image} className="w-full object-contain" alt="Human stories" />
+            <div className="absolute inset-0 bg-black bg-opacity-40" />
+          </div>
+        </div>
       </main>
       {/* Footer */}
       <footer className="flex justify-center space-x-6 py-4 text-sm text-gray-500 border-t apply-colors-secondary">

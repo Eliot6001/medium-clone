@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import Logo from "@/components/logo"
+import Logo from "@/components/logo.jsx"
 import { ModeToggle } from "@/components/mode-toggle"
 import { UserCircle, Bell, PenSquare, MenuIcon } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet'
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 const SignedInNavbar = () => {
   return (
-    <header className=" container flex h-20 w-full ml-2 mt-2 rounded shrink-0 items-center px-4 md:px-6 apply-colors-secondary">
+    <header className=" container flex h-20 w-full rounded shrink-0 items-center px-4 md:px-6 apply-colors-secondary">
       <Sheet>
         <SheetTrigger asChild >
           <Button variant="outline" size="icon" className="rounded-xl lg:hidden">

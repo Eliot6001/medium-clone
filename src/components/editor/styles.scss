@@ -1,0 +1,60 @@
+/* Basic editor styles */
+.tiptap {
+  :first-child {
+    margin-top: 0;
+  }
+
+  /* Unordered List (ul) Styling */
+  ul {
+    list-style-type: disc; // Disc bullets
+    margin-left: 1.5rem; // Indent list
+    padding-left: 0; // Remove padding
+
+    li {
+      margin-bottom: 8px; // Space between list items
+    }
+  }
+
+  /* Ordered List (ol) Styling */
+  ol {
+    list-style-type: decimal; // Numbered list
+    margin-left: 1.5rem; // Indent list
+    padding-left: 0; // Remove padding
+
+    li {
+      margin-bottom: 8px; // Space between list items
+
+      &::marker {
+        font-size: 1.2rem; // Make the list number slightly bigger
+        color: #3b82f6; // Blue numbering
+      }
+    }
+  }
+
+  /* Paragraph (p) Styling */
+  p {
+    margin-bottom: 16px; // Add space below each paragraph
+    line-height: 1.6; // Make text more readable
+    color: #333; // Darker text for better readability
+  }
+
+  /* Heading (h2) Styling */
+  h2 {
+    font-size: 1.5rem; // Slightly larger text size
+    margin-bottom: 12px; // Space below heading
+    font-weight: 600; // Bold text
+    color: #1f2937; // Dark gray text
+    border-bottom: 2px solid #d1d5db; // Subtle bottom border
+    padding-bottom: 4px; // Add some padding under heading
+  }
+  img {
+    display: block;
+    height: auto;
+    margin: 1.5rem 0;
+    max-width: 100%;
+
+    &.ProseMirror-selectednode {
+      outline: 3px solid var(--purple);
+    }
+  }
+}

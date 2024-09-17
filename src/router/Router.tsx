@@ -9,6 +9,8 @@ import Providers from "../providers/Provider";
 import Account from '../Account'
 import Profile from '../Profile'
 import Reset from '../reset'
+import Main from "@/root/main";
+import Write from '@/root/write'
 
 const router = createBrowserRouter([
   // I recommend you reflect the routes here in the pages folder
@@ -20,6 +22,9 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: < Root />,
+      },
+      { path: '/main',
+        element: <Main />
       },
       {
         path: "/login",
@@ -50,6 +55,10 @@ const router = createBrowserRouter([
           {
             path: "profile",
             element: <Profile />
+          },
+{
+            path: "write",
+            element: <Write />
           }
         ],
       },
