@@ -7,10 +7,18 @@ import {
   Italic,
   List,
   ListOrdered,
-  Heading2
+  Heading2,
+  Underline,
+  Link,
+  ArrowUp,
+  ArrowDown,
+  AArrowDown,
+  AArrowUp
 } from 'lucide-react'
 import { Toggle } from '@/components/ui/toggle'
 import './styles.scss'
+import { number } from 'zod'
+import { Input } from '../ui/input'
 type ToolbarProps = {
   editor: Editor | null
 }
@@ -18,8 +26,30 @@ type ToolbarProps = {
 const Toolbar = ({ editor }: ToolbarProps) => {
   if (!editor) return null
 
+  const setLink = React.useCallback(() => {
+    const previousUrl = editor.getAttributes('link').href
+    const url = window.prompt('URL', previousUrl)
+
+    // cancelled
+    if (url === null) {
+      return
+    }
+
+    // empty
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink()
+        .run()
+
+      return
+    }
+
+    // update link
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url })
+      .run()
+  }, [editor])
+
   return (
-    <div className="flex space-x-2 p-2 bg-gray-100 rounded-lg">
+    <div className="flex space-x-2 p-2 bg-gray-100 rounded-lg apply-colors-primary ">
       <Toggle
         pressed={editor.isActive('heading', { level: 2 })}
         onPressedChange={() => {
@@ -49,7 +79,15 @@ const Toolbar = ({ editor }: ToolbarProps) => {
       >
         <Italic size={16} />
       </Toggle>
-
+      <Toggle
+        pressed={editor.isActive('underline')}
+        onPressedChange={() => {
+          editor.chain().focus().toggleUnderline().run()
+        }}
+        className="p-2"
+      >
+        <Underline size={16} />
+      </Toggle>
       <Toggle
         pressed={editor.isActive('strike')}
         onPressedChange={() => {
@@ -59,6 +97,12 @@ const Toolbar = ({ editor }: ToolbarProps) => {
       >
         <Strikethrough size={16} />
       </Toggle>
+
+      <Toggle
+        onClick={setLink} className={editor.isActive('link') ? 'is-active' : ''} >
+        <Link size={16} />
+      </Toggle>
+
 
       <Toggle
         pressed={editor.isActive('bulletList')}

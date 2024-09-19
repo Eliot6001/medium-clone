@@ -4,6 +4,8 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
+import { useSession } from '@/context/SupabaseContext';
+
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -17,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 import Tiptap from '@/components/editor/tiptap'
+import SignedInNavbar from '@/components/fullComponents/SignedInNavBar';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: "Add a title to your article!" }).max(100, { message: 'Pick a smaller title!' }),
@@ -24,6 +27,12 @@ const formSchema = z.object({
 })
 
 const Write = () => {
+
+  const { session } = useSession();
+  if (!session) {
+    return <Navigate to="/login" replace />
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
@@ -38,42 +47,44 @@ const Write = () => {
     console.log(values)
   }
   return (
+    <>
+      <SignedInNavbar />
+      <div className="overflow-x-hidden">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-8 apply-colors-secondary px-10 py-5 h-screen overflow-x-hidden">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Title..."  {...field} className="outline-0 ring-0 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 transition-all duration-150" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-    <div className="write-page">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Title..." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="text"
+              render={({ field }) => (
+                <FormItem className="flex-1  max-h-full ">
+                  <FormControl>
+                    <Tiptap description={''} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage className="py-2 px-2 dark:bg-zinc-500 dark:bg-opacity-25 dark:text-red-400  rounded w-fit" />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="text"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Tiptap description={''} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
 
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
-
-    </div>
+      </div>
+    </>
   );
 };
 

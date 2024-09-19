@@ -5,7 +5,7 @@ import Router from "./router/Router";
 function App() {
 
   return (
-    <div className="w-screen  min-h-screen">
+    <div className="w-screen min-h-screen">
       <RouterProvider router={Router} />
     </div>
   )

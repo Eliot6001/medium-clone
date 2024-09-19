@@ -1,5 +1,6 @@
 /* Basic editor styles */
 .tiptap {
+
   :first-child {
     margin-top: 0;
   }
@@ -26,7 +27,6 @@
 
       &::marker {
         font-size: 1.2rem; // Make the list number slightly bigger
-        color: #3b82f6; // Blue numbering
       }
     }
   }
@@ -35,7 +35,6 @@
   p {
     margin-bottom: 16px; // Add space below each paragraph
     line-height: 1.6; // Make text more readable
-    color: #333; // Darker text for better readability
   }
 
   /* Heading (h2) Styling */
@@ -43,10 +42,10 @@
     font-size: 1.5rem; // Slightly larger text size
     margin-bottom: 12px; // Space below heading
     font-weight: 600; // Bold text
-    color: #1f2937; // Dark gray text
     border-bottom: 2px solid #d1d5db; // Subtle bottom border
     padding-bottom: 4px; // Add some padding under heading
   }
+
   img {
     display: block;
     height: auto;
@@ -57,4 +56,52 @@
       outline: 3px solid var(--purple);
     }
   }
+}
+
+.editor-wrapper {
+  position: relative;
+
+  &.dragging::after {
+    content: 'Drop image here';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    pointer-events: none;
+  }
+}
+
+.ProseMirror {
+  min-height: 20rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.editor-wrapper .ProseMirror {
+  padding: 1rem;
+  /* Ensure the text behaves as intended with proper margins */
+}
+
+.editor-wrapper {
+  overflow-y: auto;
+}
+
+ul,
+ol,
+h1,
+h2,
+pre,
+blockquote {
+  margin: 1.5rem 0;
 }
