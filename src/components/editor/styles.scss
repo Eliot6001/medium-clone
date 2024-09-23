@@ -33,7 +33,7 @@
 
   /* Paragraph (p) Styling */
   p {
-    margin-bottom: 16px; // Add space below each paragraph
+    margin-bottom: 10px; // Add space below each paragraph
     line-height: 1.6; // Make text more readable
   }
 
@@ -79,10 +79,8 @@
 
 .ProseMirror {
   min-height: 20rem;
-  border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
-
   &:focus {
     outline: none;
   }
@@ -94,7 +92,7 @@
 }
 
 .editor-wrapper {
-  overflow-y: auto;
+  border: 1;
 }
 
 ul,

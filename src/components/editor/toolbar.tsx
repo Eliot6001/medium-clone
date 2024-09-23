@@ -10,10 +10,13 @@ import {
   Heading2,
   Underline,
   Link,
+  Code,
   ArrowUp,
   ArrowDown,
   AArrowDown,
-  AArrowUp
+  AArrowUp,
+  UndoIcon,
+  Redo
 } from 'lucide-react'
 import { Toggle } from '@/components/ui/toggle'
 import './styles.scss'
@@ -25,7 +28,8 @@ type ToolbarProps = {
 
 const Toolbar = ({ editor }: ToolbarProps) => {
   if (!editor) return null
-
+  const toggleClassName = `bg-zinc-200 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150
+`
   const setLink = React.useCallback(() => {
     const previousUrl = editor.getAttributes('link').href
     const url = window.prompt('URL', previousUrl)
@@ -49,13 +53,13 @@ const Toolbar = ({ editor }: ToolbarProps) => {
   }, [editor])
 
   return (
-    <div className="flex space-x-2 p-2 bg-gray-100 rounded-lg apply-colors-primary ">
+    <div className="flex space-x-2 p-2 bg-gray-100 rounded-t-lg apply-colors-primary">
       <Toggle
         pressed={editor.isActive('heading', { level: 2 })}
         onPressedChange={() => {
           editor.chain().focus().toggleHeading({ level: 2 }).run()
         }}
-        className="p-2"
+        className={editor.isActive('heading', { level: 2 }) ? `${toggleClassName} is-active` : ''}
       >
         <Heading2 size={16} />
       </Toggle>
@@ -65,7 +69,7 @@ const Toolbar = ({ editor }: ToolbarProps) => {
         onPressedChange={() => {
           editor.chain().focus().toggleBold().run()
         }}
-        className="p-2"
+        className={editor.isActive('bold') ? `${toggleClassName} is-active` : ''}
       >
         <Bold size={16} />
       </Toggle>
@@ -75,31 +79,35 @@ const Toolbar = ({ editor }: ToolbarProps) => {
         onPressedChange={() => {
           editor.chain().focus().toggleItalic().run()
         }}
-        className="p-2"
+        className={editor.isActive('italic') ? `${toggleClassName} is-active` : ''}
       >
         <Italic size={16} />
       </Toggle>
+
       <Toggle
         pressed={editor.isActive('underline')}
         onPressedChange={() => {
           editor.chain().focus().toggleUnderline().run()
         }}
-        className="p-2"
+        className={editor.isActive('underline') ? `${toggleClassName} is-active` : ''}
       >
         <Underline size={16} />
       </Toggle>
+
       <Toggle
         pressed={editor.isActive('strike')}
         onPressedChange={() => {
           editor.chain().focus().toggleStrike().run()
         }}
-        className="p-2"
+        className={editor.isActive('strike') ? `${toggleClassName} is-active` : ''}
       >
         <Strikethrough size={16} />
       </Toggle>
 
       <Toggle
-        onClick={setLink} className={editor.isActive('link') ? 'is-active' : ''} >
+        onClick={setLink}
+        className={editor.isActive('link') ? `${toggleClassName} is-active` : ''}
+      >
         <Link size={16} />
       </Toggle>
 
@@ -109,7 +117,7 @@ const Toolbar = ({ editor }: ToolbarProps) => {
         onPressedChange={() => {
           editor.chain().focus().toggleBulletList().run()
         }}
-        className="p-2"
+        className={editor.isActive('bulletList') ? `${toggleClassName} is-active` : ''}
       >
         <List size={16} />
       </Toggle>
@@ -119,11 +127,33 @@ const Toolbar = ({ editor }: ToolbarProps) => {
         onPressedChange={() => {
           editor.chain().focus().toggleOrderedList().run()
         }}
-        className="p-2"
+        className={editor.isActive('orderedList') ? `${toggleClassName} is-active` : ''}
       >
         <ListOrdered size={16} />
       </Toggle>
-    </div>
+      <Toggle
+        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+        className={editor.isActive('codeBlock') ? `${toggleClassName} is-active` : ''}
+      >
+        <Code size={16} />
+      </Toggle>
+
+      <Toggle
+        className={`${toggleClassName}`}
+        disabled={!editor.can().undo()}
+        onClick={() => editor.chain().focus().undo().run()}
+      >
+        <UndoIcon size={16} />
+      </Toggle>
+
+      <Toggle
+        onClick={() => editor.chain().focus().redo().run()}
+        className={`${toggleClassName}`}
+        disabled={!editor.can().redo()}
+      >
+        <Redo size={16} />
+      </Toggle >
+    </div >
   )
 }
 
