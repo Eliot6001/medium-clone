@@ -39,6 +39,8 @@ const Tiptap = ({
     },
     onUpdate(evt) {
       onChange(evt.editor.getHTML())
+      console.log(evt.editor.getHTML())
+
       const { selection } = evt.editor.state;
 
       if (!selection.empty) {
@@ -60,7 +62,7 @@ const Tiptap = ({
   return (
     <div className="h-full "> {/* Make sure the wrapper is h-full */}
       <Toolbar editor={editor} />
-      <div className="editor-wrapper h-80 overflow-y-scroll"> {/* Scroll here */}
+      <div className="editor-wrapper h-80 overflow-y-scroll no-scrollbar"> {/* Scroll here */}
         <AddImage editor={editor} />
         <EditorContent editor={editor} />
       </div>

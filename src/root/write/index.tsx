@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 
 import { useSession } from '@/context/SupabaseContext';
 
+
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -21,6 +22,11 @@ import { Input } from "@/components/ui/input"
 import Tiptap from '@/components/editor/tiptap'
 import SignedInNavbar from '@/components/fullComponents/SignedInNavBar';
 
+import axios from 'axios'
+import { toast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
+
+
 const formSchema = z.object({
   title: z.string().min(5, { message: "Add a title to your article!" }).max(100, { message: 'Pick a smaller title!' }),
   text: z.string().min(100, { message: 'Article is a little too small to publish' }).trim(),
@@ -28,11 +34,13 @@ const formSchema = z.object({
 
 const Write = () => {
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { session } = useSession();
   if (!session) {
     return <Navigate to="/login" replace />
   }
 
+  if (session) console.log(session, "supabase session")
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
@@ -41,11 +49,32 @@ const Write = () => {
       text: '',
     }
   })
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      console.log(values);
+
+      const response = await axios.post(`${backendUrl}/articles/submit`, {
+        title: values.title,
+        content: values.text
+      }, {
+        headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      });
+
+      toast({
+        variant: 'success',
+        description: `Success!`
+      });
+      console.log(response, "Success");
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: `Something seems to be wrong: ${error}`
+      });
+      console.log(error, "Error");
+    }
   }
+
   return (
     <>
       <SignedInNavbar />
