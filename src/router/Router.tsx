@@ -11,6 +11,8 @@ import Profile from '../Profile'
 import Reset from '../reset'
 import Main from "@/root/main";
 import Write from '@/root/write'
+import Article from "@/root/articles/[id]";
+import Userprofile from "@/root/profile/[id]";
 
 const router = createBrowserRouter([
   // I recommend you reflect the routes here in the pages folder
@@ -23,7 +25,8 @@ const router = createBrowserRouter([
         path: "/",
         element: < Root />,
       },
-      { path: '/main',
+      {
+        path: '/main',
         element: <Main />
       },
       {
@@ -39,9 +42,18 @@ const router = createBrowserRouter([
       },
       {
         path: "/reset",
-        element: <Reset/>,
+        element: <Reset />,
 
       },
+      {
+        path: "/articles/:id", // Dynamic route for articles with an ID
+        element: <Article />,
+      },
+      {
+        path: "/profile/:id", // Dynamic route for articles with an ID
+        element: <Userprofile />,
+      },
+
 
       // Auth Protected routes
       {
@@ -56,7 +68,7 @@ const router = createBrowserRouter([
             path: "profile",
             element: <Profile />
           },
-{
+          {
             path: "write",
             element: <Write />
           }
