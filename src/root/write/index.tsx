@@ -41,6 +41,7 @@ const Write = () => {
   }
 
   if (session) console.log(session, "supabase session")
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',

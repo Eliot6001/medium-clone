@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 import { useToast } from "@/components/ui/use-toast"
 
-export default function Avatar({ url, size, onUpload }) {
+export default function Avatar({ url, size, onUpload, onPublicRoute = false }) {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -36,6 +36,7 @@ export default function Avatar({ url, size, onUpload }) {
   }
 
   async function uploadAvatar(event) {
+    if (onPublicRoute) return;
     try {
       setUploading(true);
 
@@ -73,13 +74,14 @@ export default function Avatar({ url, size, onUpload }) {
   return (
     <div className="flex flex-col items-center space-y-4">
       {avatarUrl ? (
-        <img
-          src={avatarUrl}
-          alt="Avatar"
-          className="rounded-full shadow-lg"
-          style={{ height: size, width: size }}
-        />
-      ) : (
+        <span className="inline-block rounded-full overflow-hidden">
+          <img
+            src={avatarUrl}
+            alt="Avatar"
+            className="rounded-full shadow-lg object-cover"
+            style={{ height: size, width: size }}
+          />
+        </span>) : (
         <div
           className="rounded-full bg-gray-200 dark:bg-zinc-700 flex items-center justify-center"
           style={{ height: size, width: size }}
@@ -87,19 +89,21 @@ export default function Avatar({ url, size, onUpload }) {
           <span className="text-gray-500 dark:text-gray-400">No Image</span>
         </div>
       )}
-      <div className="w-full flex justify-center">
-        <label className={`button primary block cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`} htmlFor="single">
-          {uploading ? 'Uploading ...' : 'Upload'}
-        </label>
-        <Input
-          className="hidden"
-          type="file"
-          id="single"
-          accept="image/*"
-          onChange={uploadAvatar}
-          disabled={uploading}
-        />
-      </div>
+      {!onPublicRoute &&
+        <div className="w-full flex justify-center">
+          <label className={`button primary block cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`} htmlFor="single">
+            {uploading ? 'Uploading ...' : 'Upload'}
+          </label>
+          <Input
+            className="hidden"
+            type="file"
+            id="single"
+            accept="image/*"
+            onChange={uploadAvatar}
+            disabled={uploading}
+          />
+        </div>
+      }
     </div>
   );
 }

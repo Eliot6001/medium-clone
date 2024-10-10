@@ -1,8 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Facebook, Github, Instagram, Twitter, X } from 'lucide-react'
 import { cn } from '@/lib/utils';
-
+import  Avatar  from "@/Avatar";
 import { useState, useEffect } from 'react'
 
 interface ProfileData {
@@ -13,13 +12,14 @@ interface ProfileData {
     twitter?: string;
     github?: string;
   },
+  website?: string;
   bio?: string;
   time_joined: string;
 }
-const ProfileData = ({ pfpUrl, username, socials = {}, bio, time_joined}: ProfileData) => {
+const ProfileData = ({ pfpUrl, username, socials = {}, website,bio, time_joined}: ProfileData) => {
   const [Socialmedia, setSocialmedia] = useState<Partial<ProfileData['socials']>>({});
 
-  const time = time_joined ? new Date(time_joined).toLocaleString() : 'Err'
+  const time = time_joined ? new Date(time_joined).toLocaleDateString() : 'Err'
 
   useEffect(() => {
     const updatedSocialmedia: Partial<ProfileData['socials']> = {};
@@ -33,14 +33,12 @@ const ProfileData = ({ pfpUrl, username, socials = {}, bio, time_joined}: Profil
     setSocialmedia(updatedSocialmedia);
   }, [])
 
+
   return (
     <Card className="shadow dark:shadow-zinc-800 shadow-zinc-300 w-full">
       <CardHeader>
         <CardTitle className="flex items-center space-x-3">
-          <Avatar>
-            <AvatarImage src={pfpUrl ? pfpUrl : ''} />
-            <AvatarFallback>{username[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <Avatar url={pfpUrl}  size={80} onPublicRoute />
           <span>
             <p className="text-primary text-normal leading-7 [&:not(:first-child)]:mt-6">{username}</p>
             <p className="dark:text-zinc-200/50 hover:dark:text-zinc-200/50 hover:text-zinc-900/50 text-zinc-900/50 text-base"> <small>Joined at: {time} </small> </p>
@@ -50,6 +48,10 @@ const ProfileData = ({ pfpUrl, username, socials = {}, bio, time_joined}: Profil
       <CardContent className="space-y-0.5">
         <div className="text-lg font-semibold">About</div>
         <p className={cn("text-base leading-7 [&:not(:first-child)]:mt-6", !bio && 'text-muted text-zinc-900/45 dark:text-zinc-200/45')}>{bio ? bio : 'There is no information.'}</p>
+        {website && <span className="flex  flex-col align-center">
+          <p className="w-fit text-sm mt-2"> Personal Website: </p>
+          <a className="" href={website} target={"_blank"} rel="noopener noreferrer">{website} </a>
+        </span>}
       </CardContent>
       <CardFooter className="space-x-2 flex items-center select-none">
         {Socialmedia?.ig && (
