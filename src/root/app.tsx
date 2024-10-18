@@ -2,13 +2,13 @@
 import TopNavbar from "@/components/fullComponents/topNavbar";
 import { Button } from "@/components/ui/button";
 import Image from "../assets/img.jpg"
+import Navbar from "@/components/fullComponents/Nav";
 const Rootpage = () => {
 
   return (
 
     <div className="min-h-screen flex flex-col w-screen">
-      <TopNavbar />
-
+      <Navbar />
       <main className="flex w-full justify-center flex-1 lg:px-8 px-2 apply-colors-primary">
         <div className="flex flex-col justify-center items-start w-full lg:w-1/2 py-16 ">
           <h1 className="lg:text-5xl text-3xl font-bold leading-tight text-zinc-900 dark:text-zinc-200 ">

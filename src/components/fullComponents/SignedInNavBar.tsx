@@ -4,10 +4,24 @@ import { ModeToggle } from "@/components/mode-toggle"
 import { UserCircle, Bell, PenSquare, MenuIcon } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet'
 import { Button } from "@/components/ui/button";
+import { useSession } from '@/context/SupabaseContext'
+import useProfile from '@/hooks/useProfileData'
+import { useEffect, useState } from 'react'
+import Avatar from '../../Avatar'
+import { cn } from '@/lib/utils'
 
 const SignedInNavbar = () => {
+  const { session } = useSession();
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  const { loading, avatarUrl } = useProfile();
+
+  useEffect(() => {
+    if (avatarUrl) setAvatar(avatarUrl)
+  }, [loading, avatarUrl])
+
   return (
-    <header className=" container flex h-20 w-full rounded shrink-0 items-center px-4 md:px-6 apply-colors-secondary">
+    <header className="container flex h-20 w-full rounded shrink-0 items-center px-4 md:px-6 apply-colors-secondary dark:bg-zinc-950">
       <Sheet>
         <SheetTrigger asChild >
           <Button variant="outline" size="icon" className="rounded-xl lg:hidden">
@@ -16,13 +30,14 @@ const SignedInNavbar = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="h-screen w-20 flex px-4 flex-col">
-          <Link href="#" className="mr-6 lg:flex" >
+
+          <Link to="/home" className="ml-2 lg:flex" >
             <Logo className="w-8 h-6" />
             <span className="sr-only">Thread</span>
           </Link>
 
-          <div className="grid gap-2 py-6">
-            <Link href="#" className="a-primary w-fit flex gap-2 px-2" >
+          <div className="grid gap-2 py-6 justify-center">
+            <Link to="#" className="a-primary w-fit flex gap-2 px-2" >
               <PenSquare />
               <span className="sr-only">Write</span>
             </Link>
@@ -32,8 +47,9 @@ const SignedInNavbar = () => {
               <span className="sr-only">Notifications</span>
             </Link>
 
-            <Link to="/profile" className="a-primary px-2 w-fit">
-              <UserCircle />
+            <Link to="/profile" className={cn("w-full", !avatar && 'a-primary')}>
+              {!avatar && <UserCircle />}
+              {avatar && <Avatar url={avatar} size={28} onPublicRoute={true} />}
               <span className="sr-only">Profile</span>
             </Link>
 
@@ -58,11 +74,12 @@ const SignedInNavbar = () => {
           <Bell />
           <span className="sr-only">Notifications</span>
         </Link>
-        <Link to="/profile" className="a-primary">
-          <UserCircle />
+        <ModeToggle className="apply-colors-primary rounded-xl" />
+        <Link to="/profile" className={cn("rounded-xl", !avatar && 'a-primary')}>
+          {!avatar && <UserCircle />}
+          {avatar && <Avatar className="rounded-full " url={avatar} size={28} onPublicRoute={true} />}
           <span className="sr-only">Profile</span>
         </Link>
-        <ModeToggle className="apply-colors-primary rounded-xl" />
       </nav>
     </header>
   )

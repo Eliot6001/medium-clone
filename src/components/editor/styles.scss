@@ -1,6 +1,10 @@
 /* Basic editor styles */
 .tiptap {
 
+  border-radius: 4px;
+  /* This will keep formatting like spaces and line breaks */
+  overflow-x: hidden;
+
   :first-child {
     margin-top: 0;
   }

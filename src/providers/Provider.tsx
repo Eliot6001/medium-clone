@@ -6,12 +6,10 @@ import { Toaster } from "@/components/ui/toaster"
 const AuthProviders = () => {
   return (
     <SessionProvider>
-
       <ThemeProvider>
         <Outlet />
         <Toaster />
       </ThemeProvider>
-
     </SessionProvider>
   );
 };

@@ -14,8 +14,7 @@ const Main = () => {
         <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight text-primary">
           Latest Articles
         </h4>
-        <ArticleCard insideProfile={false} className=" bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150
-"/>
+        <ArticleCard insideProfile={false} className=" bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150" />
         <ArticleCard insideProfile={false} className="bg-zinc-200 dark:bg-zinc-900  text-gray-900 dark:text-gray-100 transition-all duration-150
 "/>
       </div>

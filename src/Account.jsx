@@ -6,6 +6,7 @@ import { Button } from './components/ui/button'
 import { useSession } from "./context/SupabaseContext";
 import { Input } from '@/components/ui/input'
 import { useToast } from "@/components/ui/use-toast"
+import useProfile from './hooks/useProfileData'
 
 export default function Account() {
   const [loading, setLoading] = useState(true)
@@ -16,53 +17,16 @@ export default function Account() {
   const { toast } = useToast()
   const { session } = useSession();
 
+  const { loading: isFetching, username: fetchedUserName, website: fetchedWebsite, avatarUrl: fetchedavatarUrl } = useProfile();
+
   useEffect(() => {
-    let ignore = false
+    setLoading(isFetching);
 
-    async function getProfile() {
-      try {
-        setLoading(true)
-        const { user } = session
-        let { data, error, status } = await supabase
-          .from('user_profiles')
-          .select(`username, website, avatar_url`)
-          .eq('id', user.id)
-          .single()
+    if (fetchedUserName) setUsername(fetchedUserName)
+    if (fetchedWebsite) setWebsite(fetchedWebsite)
+    if (fetchedavatarUrl) setAvatarUrl(fetchedavatarUrl)
 
-        if (error && status !== 406) {
-          toast({
-            variant: 'destructive',
-            title: 'Failed!',
-            description: 'Failed to retreive data from db!',
-            duration: 1500
-          })
-          throw error
-        }
-
-        if (data) {
-          setUsername(data.username)
-          setWebsite(data.website)
-          setAvatarUrl(data.avatar_url)
-        }
-
-      } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Failed!',
-          description: `Error : ${error}`,
-          duration: 1500
-        })
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    getProfile()
-
-    return () => {
-      ignore = true
-    }
-  }, [session])
+  }, [isFetching, fetchedUserName, fetchedWebsite, fetchedavatarUrl])
 
   async function updateProfile(event, avatarUrl) {
     event.preventDefault()
@@ -96,7 +60,7 @@ export default function Account() {
 
   return (
     <><SignedInNavbar />
-      <div className="container px-8 py-6 w-8/12">
+      <div className="container px-8 py-6 w-8/12 ">
         <form onSubmit={updateProfile} className="space-y-6 apply-colors-primary p-6 rounded-lg shadow-md">
           <div className="flex justify-center">
             <Avatar
@@ -142,13 +106,13 @@ export default function Account() {
 
           <div className="flex justify-end divide-x-5 gap-2">
             <div>
-              <Button variant={"primary"} className="a-primary rounded" type="submit" disabled={loading}>
+              <Button variant={"primary"} className=" bg-sky-400 hover:bg-sky-500 text-black py-2 px-4 rounded shadow-md hover:shadow-lg transition duration-300 " type="submit" disabled={loading}>
                 {loading ? 'Loading ...' : 'Update'}
               </Button>
             </div>
 
             <div>
-              <Button className="rounded" variant={"outline"} type="button" onClick={() => supabase.auth.signOut()}>
+              <Button className="rounded transition-colors duration-300 dark:hover:bg-zinc-900 " variant={"outline"} type="button" onClick={() => supabase.auth.signOut()}>
                 Sign Out
               </Button>
             </div>

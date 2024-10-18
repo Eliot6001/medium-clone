@@ -18,6 +18,7 @@ export const useSession = () => {
 };
 
 type Props = { children: React.ReactNode };
+
 export const SessionProvider = ({ children }: Props) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);

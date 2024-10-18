@@ -15,8 +15,9 @@ interface ProfileData {
   website?: string;
   bio?: string;
   time_joined: string;
+  personal: boolean;
 }
-const ProfileData = ({ pfpUrl, username, socials = {}, website,bio, time_joined}: ProfileData) => {
+const ProfileData = ({ pfpUrl, username, socials = {}, website,bio, time_joined, personal = false}: ProfileData) => {
   const [Socialmedia, setSocialmedia] = useState<Partial<ProfileData['socials']>>({});
 
   const time = time_joined ? new Date(time_joined).toLocaleDateString() : 'Err'
@@ -32,7 +33,6 @@ const ProfileData = ({ pfpUrl, username, socials = {}, website,bio, time_joined}
 
     setSocialmedia(updatedSocialmedia);
   }, [])
-
 
   return (
     <Card className="shadow dark:shadow-zinc-800 shadow-zinc-300 w-full">
