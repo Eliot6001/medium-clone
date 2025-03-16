@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import TopNavbar from '@/components/fullComponents/topNavbar'
+import TopNavbar from '@/components/fullComponents/DefaultNavbar'
 import { supabase } from '../supabaseClient'
 import {
   Card,
@@ -12,19 +12,24 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from '@/components/ui/button'
-import { Key, Mail } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { LoaderCircle } from 'lucide-react'
 import { useToast } from "@/components/ui/use-toast"
 
+//code needs to be rewritten in a way that i can do that 
+//either through RLS (Row Level Security) or through the database
+//passing the jwt. or maybe force logging again?
 const Reset = () => {
-  const [loading, setLoading] = useState(false)
 
+  const [loading, setLoading] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setconfirmPassword] = useState('')
+  const [allowed, setAllowed] = useState(false)
+  const { toast } = useToast()
+  const navigate = useNavigate()
 
   const handlePassword = (password: string) => {
-    const allowedPattern = /^[a-zA-Z0-9_\-\.]+$/
+    const allowedPattern = /^[a-zA-Z0-9_\-.]+$/
     if (!allowedPattern.test(password)) {
       toast({
         variant: 'destructive',
@@ -38,16 +43,14 @@ const Reset = () => {
   }
 
   const Matched = (password: string, password2: string) => password === password2;
-
-  const sendResetPassword = async (event: any) => {
+  //It tells me that authSession not found, we need to take care of it later!
+  const sendResetPassword = async (event: React.FormEvent) => {
     event.preventDefault()
     setLoading(true)
-
     handlePassword(password)
     const passwordsareTheSame = Matched(password, confirmPassword);
-
     if (allowed && passwordsareTheSame) {
-      const { data, error } =  await supabase.auth.updateUser({ password: password })
+      const { error } =  await supabase.auth.updateUser({ password: password })
 
       if (error) {
         toast({
@@ -56,7 +59,7 @@ const Reset = () => {
         })
       } else {
         toast({
-          variant: 'primary',
+          variant: 'success',
           title: "Success",
           description: `You can now login to your account with the new password.`,
         })
@@ -68,10 +71,6 @@ const Reset = () => {
     }
   }
 
-  const [allowed, setAllowed] = useState(false)
-
-  const { toast } = useToast()
-  const navigate = useNavigate()
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
-import SignedInNavbar from '@/components/fullComponents/SignedInNavBar'
+import Nav from '@/components/fullComponents/Nav'
 import Avatar from './Avatar'
 import { Button } from './components/ui/button'
 import { useSession } from "./context/SupabaseContext";
 import { Input } from '@/components/ui/input'
 import { useToast } from "@/components/ui/use-toast"
 import useProfile from './hooks/useProfileData'
+import {Info} from 'lucide-react'
 
 export default function Account() {
   const [loading, setLoading] = useState(true)
-  const [username, setUsername] = useState(null)
-  const [website, setWebsite] = useState(null)
-  const [avatar_url, setAvatarUrl] = useState(null)
+  const [username, setUsername] = useState('')
+  const [website, setWebsite] = useState('')
+  const [avatar_url, setAvatarUrl] = useState('')
 
   const { toast } = useToast()
   const { session } = useSession();
@@ -59,7 +60,7 @@ export default function Account() {
   }
 
   return (
-    <><SignedInNavbar />
+    <><Nav />
       <div className="container px-8 py-6 w-8/12 ">
         <form onSubmit={updateProfile} className="space-y-6 apply-colors-primary p-6 rounded-lg shadow-md">
           <div className="flex justify-center">
@@ -69,7 +70,7 @@ export default function Account() {
               onUpload={(event, url) => updateProfile(event, url)}
             />
           </div>
-
+           <span className="flex space-x-2 px-2 py-3 border-1 border rounded-lg border-black dark:border-slate-400"><Info /> <p className="small">You don't have to press update for this to update</p></span>
           <div className="flex flex-col space-y-2">
             <label htmlFor="email" className="text-primary font-medium">Email</label>
             <Input

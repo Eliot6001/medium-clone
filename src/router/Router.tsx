@@ -1,9 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 import HomePage from "../HomePage";
 import Root from '../root/app'
-import SignInPage from "../Auth";
+import SignInPage from "../Login";
 import SignUpPage from "../SignUp";
 import NotFoundPage from "../pages/Error404Page";
+import LoggingOutWindow from "../pages/Logout";
 import AuthProtectedRoute from "./AuthProtectedRoute";
 import Providers from "../providers/Provider";
 import Account from '../Account'
@@ -11,6 +12,7 @@ import Profile from '../Profile'
 import Reset from '../reset'
 import Main from "@/root/main";
 import Write from '@/root/write'
+import EditArticle from "@/root/articles/edit/[id]";
 import Article from "@/root/articles/[id]";
 import Userprofile from "@/root/profile/[id]";
 
@@ -41,7 +43,7 @@ const router = createBrowserRouter([
         element: <SignUpPage />,
       },
       {
-        path: "/reset",
+        path: "/account/update-password",
         element: <Reset />,
 
       },
@@ -65,12 +67,20 @@ const router = createBrowserRouter([
             element: <Account />,
           },
           {
+            path: "/articles/edit/:id", // Dynamic route for articles with an ID
+            element: <EditArticle />,
+          },
+          {
             path: "profile",
             element: <Profile />
           },
           {
             path: "write",
             element: <Write />
+          },
+          {
+            path: "logout",
+            element: <LoggingOutWindow />
           }
         ],
       },

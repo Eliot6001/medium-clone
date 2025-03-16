@@ -9,6 +9,11 @@ const SessionContext = createContext<{
   session: null,
 });
 
+//I gotta rewrite this  so it has a authManager 
+// That handles login, logout and session checks,
+// Should talk to third party auth, supabase
+//ensures userdata is synced 
+
 export const useSession = () => {
   const context = useContext(SessionContext);
   if (!context) {
@@ -34,7 +39,7 @@ export const SessionProvider = ({ children }: Props) => {
     return () => {
       authStateListener.data.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
 
   return (
     <SessionContext.Provider value={{ session }}>

@@ -3,7 +3,7 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/useStoreModal";
-import Auth from '@/Auth'
+import Auth from '@/Login'
 
 export function DialogCloseButton() {
   const { isOpen, onClose, type, data } = useModal();

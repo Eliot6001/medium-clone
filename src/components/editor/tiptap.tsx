@@ -1,30 +1,44 @@
 // src/Tiptap.tsx
-import { useEditor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Toolbar from './toolbar'
-import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
-import AddImage from './AddImage'
-import Underline from '@tiptap/extension-underline'
-import { cn } from '@/lib/utils'
-import { ScrollRestoration } from 'react-router-dom'
+import {
+  useEditor,
+  EditorContent,
+} from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Toolbar from "./toolbar";
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import AddImage from "./AddImage";
+import Underline from "@tiptap/extension-underline";
+import { cn } from "@/lib/utils";
+
 
 // define your extension array
-const extensions = [StarterKit.configure(), Image.configure({
-  allowBase64: true,
-}), Underline,
-Link.configure({
-  openOnClick: false,
-  autolink: true,
-  defaultProtocol: 'https',
-})]
+const extensions = [
+  StarterKit.configure({
+    heading: {
+      levels: [2],
+    },
+  }),
+  Image.configure({
+    allowBase64: true,
+  }),
+  Underline,
+  Link.configure({
+    openOnClick: false,
+    autolink: true,
+    defaultProtocol: "https",
+  }),
+  
+];
 
 const Tiptap = ({
   onChange,
-  description
+  description,
+  setUploadImage,
 }: {
-  description: string,
-  onChange: (text: string) => void
+  description: string;
+  onChange: (text: string) => void;
+  setUploadImage: (uploading: boolean) => void;
 }) => {
 
   const editor = useEditor({
@@ -32,14 +46,16 @@ const Tiptap = ({
     content: description,
     editorProps: {
       attributes: {
-        class: cn('editor-wrapper w-full rounded-md border bg-white p-3 ',
-          'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 transition-all duration-150'),
-        spellcheck: 'false',
-      }
+        class: cn(
+          "editor-wrapper w-full rounded-md border bg-white p-3 ",
+          "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 transition-all duration-150"
+        ),
+        spellcheck: "false",
+      },
     },
     onUpdate(evt) {
-      onChange(evt.editor.getHTML())
-      console.log(evt.editor.getHTML())
+      onChange(evt.editor.getHTML());
+      console.log(evt.editor.getHTML());
 
       const { selection } = evt.editor.state;
 
@@ -52,22 +68,23 @@ const Tiptap = ({
       const viewportCoords = evt.editor.view.coordsAtPos(selection.from);
       const absoluteOffset = window.scrollY + viewportCoords.top;
 
-      window.scrollTo(
-        window.scrollX,
-        absoluteOffset - (window.innerHeight / 2),
-      );
+      window.scrollTo(window.scrollX, absoluteOffset - window.innerHeight / 2);
     },
-  })
+  });
 
   return (
-    <div className="h-full "> {/* Make sure the wrapper is h-full */}
+    <div className="h-full ">
+      {" "}
+      {/* Make sure the wrapper is h-full */}
       <Toolbar editor={editor} />
-      <div className="editor-wrapper h-80 overflow-y-scroll no-scrollbar"> {/* Scroll here */}
-        <AddImage editor={editor} />
+      <div className="editor-wrapper h-80 overflow-y-scroll no-scrollbar relative">
+        {" "}
+        {/* Scroll here */}
+        <AddImage editor={editor}  setUploadingImage={setUploadImage} />
         <EditorContent editor={editor} />
       </div>
-    </div>)
-}
+    </div>
+  );
+};
 
-export default Tiptap
-
+export default Tiptap ;

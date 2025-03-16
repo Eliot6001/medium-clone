@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import SignedInNavbar from './components/fullComponents/SignedInNavBar'
+import Nav from './components/fullComponents/Nav'
 import ArticleCard from './components/fullComponents/ArticleCard'
 import SuggestionCard from './components/fullComponents/SuggestionCard'
 import ProfileData from './components/fullComponents/profileData'
@@ -17,7 +17,7 @@ const Profile = () => {
   const [website, setWebsite] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
 
-  const { loading: isFetching, username: fetchedUserName, website: fetchedWebsite, avatarUrl: fetchedavatarUrl, createdAt } = useProfile(true);
+  const { loading: isFetching, username: fetchedUserName, website: fetchedWebsite, avatarUrl: fetchedavatarUrl, createdAt } = useProfile();
 
   useEffect(() => {
     setLoading(isFetching);
@@ -28,7 +28,7 @@ const Profile = () => {
 
   return (
     <>
-      <SignedInNavbar />
+      <Nav />
       <main className="flex lg:space-x-6 container py-5 lg:flex-row flex-col">
         <div className="w-11/12 lg:w-3/12">
           <ProfileData username={username} website={website} pfpUrl={avatarUrl} time_joined={createdAt} />

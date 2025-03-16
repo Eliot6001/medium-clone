@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSession } from '../../context/SupabaseContext';
 import SignedInNavbar from './SignedInNavBar';
-import TopNavbar from './topNavbar';
+import TopNavbar from './DefaultNavbar';
 
 const Navbar: React.FC = () => {
   const { session } = useSession();

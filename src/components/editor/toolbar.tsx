@@ -10,23 +10,19 @@ import {
   Heading2,
   Underline,
   Link,
-  ArrowUp,
-  ArrowDown,
-  AArrowDown,
-  AArrowUp
+
 } from 'lucide-react'
 import { Toggle } from '@/components/ui/toggle'
 import './styles.scss'
-import { number } from 'zod'
-import { Input } from '../ui/input'
+import { cn } from '@/lib/utils'
 type ToolbarProps = {
   editor: Editor | null
 }
 
 const Toolbar = ({ editor }: ToolbarProps) => {
-  if (!editor) return null
 
   const setLink = React.useCallback(() => {
+    if (!editor) return null
     const previousUrl = editor.getAttributes('link').href
     const url = window.prompt('URL', previousUrl)
 
@@ -47,6 +43,7 @@ const Toolbar = ({ editor }: ToolbarProps) => {
     editor.chain().focus().extendMarkRange('link').setLink({ href: url })
       .run()
   }, [editor])
+  if (!editor) return null
 
   return (
     <div className="flex space-x-2 p-2 bg-gray-100 rounded-lg apply-colors-primary ">
@@ -61,21 +58,19 @@ const Toolbar = ({ editor }: ToolbarProps) => {
       </Toggle>
 
       <Toggle
-        pressed={editor.isActive('bold')}
-        onPressedChange={() => {
+          className={cn("p-2", editor.isActive('bold') ? 'is-active' : 'p')}
+          onPressedChange={() => {
           editor.chain().focus().toggleBold().run()
         }}
-        className="p-2"
-      >
+        >
         <Bold size={16} />
       </Toggle>
 
       <Toggle
-        pressed={editor.isActive('italic')}
-        onPressedChange={() => {
+          className={cn("p-2", editor.isActive('italic') ? 'is-active' : 'p')}
+          onPressedChange={() => {
           editor.chain().focus().toggleItalic().run()
         }}
-        className="p-2"
       >
         <Italic size={16} />
       </Toggle>

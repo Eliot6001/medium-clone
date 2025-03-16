@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { z } from "zod"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,11 +20,11 @@ import {
 import { Input } from "@/components/ui/input"
 
 import Tiptap from '@/components/editor/tiptap'
-import SignedInNavbar from '@/components/fullComponents/SignedInNavBar';
+import Nav from '@/components/fullComponents/Nav';
 
 import axios from 'axios'
 import { toast } from '@/components/ui/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 
 const formSchema = z.object({
@@ -33,14 +33,7 @@ const formSchema = z.object({
 })
 
 const Write = () => {
-
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const { session } = useSession();
-  if (!session) {
-    return <Navigate to="/login" replace />
-  }
-
-  if (session) console.log(session, "supabase session")
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,11 +43,21 @@ const Write = () => {
       text: '',
     }
   })
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { session } = useSession();
+ 
+  if (!session) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (session) console.log(session, "supabase session")
+
+ 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       console.log(values);
-
+      if (uploadingImage) return;
       const response = await axios.post(`${backendUrl}/articles/submit`, {
         title: values.title,
         content: values.text
@@ -78,7 +81,7 @@ const Write = () => {
 
   return (
     <>
-      <SignedInNavbar />
+      <Nav />
       <div className="overflow-x-hidden">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-8 apply-colors-secondary px-10 py-5 h-screen overflow-x-hidden">
@@ -102,17 +105,19 @@ const Write = () => {
               render={({ field }) => (
                 <FormItem className="flex-1  max-h-full ">
                   <FormControl>
-                    <Tiptap description={''} onChange={field.onChange} />
+                    <Tiptap description={''} onChange={field.onChange} setUploadImage={setUploadingImage}/>
                   </FormControl>
                   <FormMessage className="py-2 px-2 dark:bg-zinc-500 dark:bg-opacity-25 dark:text-red-400  rounded w-fit" />
                 </FormItem>
               )}
             />
 
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={uploadingImage}>Submit</Button>
+            {uploadingImage && <div className="uploading-indicator"><Loader2 className="spin animate-spin"/> Uploading image...</div>}
+
           </form>
         </Form>
-
+          
       </div>
     </>
   );

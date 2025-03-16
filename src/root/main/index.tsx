@@ -2,6 +2,8 @@ import SignedInNavbar from '@/components/fullComponents/SignedInNavBar'
 import ArticleCard from '@/components/fullComponents/ArticleCard'
 import SuggestionCard from '@/components/fullComponents/SuggestionCard'
 
+//Will be gathering the latest articles and the related articles
+//after i build the suggestion system
 const Main = () => {
 
   return (

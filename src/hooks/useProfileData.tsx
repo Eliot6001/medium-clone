@@ -27,7 +27,7 @@ export function useProfile() {
         const createdAt = setCreatedat(user.created_at); 
 
         //catching
-        if (cachedProfile && (Date.now() - cachedProfile.timestamp < 3600000)) {
+        if (cachedProfile && (Date.now() - cachedProfile.timestamp < 36000)) {
           setUsername(cachedProfile.username);
           setWebsite(cachedProfile.website);
           setAvatarUrl(cachedProfile.avatar_url);
@@ -83,7 +83,7 @@ export function useProfile() {
     return () => {
       ignore = true;
     };
-  }, [session, supabase, setCachedProfile, cachedProfile]);
+  }, [session, setCachedProfile, cachedProfile, toast]);
 
   return { loading, username, website, avatarUrl, createdAt };
 }

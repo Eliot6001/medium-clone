@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import supabase from './supabaseClient.js'
+import supabase from './supabaseClient'
 import { Navigate, useNavigate } from 'react-router-dom'
-import TopNavbar from './components/fullComponents/topNavbar'
+import Nav from './components/fullComponents/Nav'
 import {
   Card,
   CardContent,
@@ -18,18 +18,25 @@ import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "./context/SupabaseContext";
 
 export default function SignUp() {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [loading, setLoading] = useState(false)
   const { session } = useSession();
-  if (session) return <Navigate to="/" />;
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [allowed, setAllowed] = useState(false)
 
+  if (session) return <Navigate to="/" />;
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { toast } = useToast()
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const navigate = useNavigate()
 
+  ///
+  /// This function checks if the password contains invalid characters
+  ///
   const handlePassword = (password: string) => {
-    const allowedPattern = /^[a-zA-Z0-9_\-\.]+$/
+    const allowedPattern = /^[a-zA-Z0-9_\-.]+$/
     if (!allowedPattern.test(password)) {
       toast({
         variant: 'destructive',
@@ -42,14 +49,21 @@ export default function SignUp() {
     }
   }
 
-  const handleSignUp = async (event: any) => {
+  ///
+  /// This function handles the sign up process
+  /// It uses the Supabase auth service to sign up the user
+  ///
+  const handleSignUp = async (event: React.FormEvent) => {
     event.preventDefault()
     setLoading(true)
     handlePassword(password)
     if (allowed) {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
+        options:{
+          emailRedicretURL:`${backendUrl}/auth/confirm`
+        }
       })
 
       if (error) {
@@ -59,7 +73,7 @@ export default function SignUp() {
         })
       } else {
         toast({
-          variant: 'primary',
+          variant: 'success',
           title: "Success",
           description: `Welcome ${email}! Check your email to confirm your account.`,
         })
@@ -75,7 +89,7 @@ export default function SignUp() {
   //
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <TopNavbar />
+      <Nav />
       <div className="w-full flex-1 flex items-center justify-center p-4 apply-colors-primary">
         <Card className="shadow-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150 h-96 flex flex-col rounded" style={{ width: '40%' }}>
           <CardHeader>

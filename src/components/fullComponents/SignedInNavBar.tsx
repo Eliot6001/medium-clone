@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import Logo from "@/components/logo.jsx"
 import { ModeToggle } from "@/components/mode-toggle"
-import { UserCircle, Bell, PenSquare, MenuIcon } from 'lucide-react'
+import { UserCircle, Bell, PenSquare, MenuIcon, LogOut } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet'
 import { Button } from "@/components/ui/button";
 import { useSession } from '@/context/SupabaseContext'
@@ -30,7 +30,7 @@ const SignedInNavbar = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="h-screen w-20 flex px-4 flex-col">
-
+          
           <Link to="/home" className="ml-2 lg:flex" >
             <Logo className="w-8 h-6" />
             <span className="sr-only">Thread</span>
@@ -55,6 +55,10 @@ const SignedInNavbar = () => {
 
           </div>
           <div className="flex-1 h-auto px-2 w-fit" />
+          {session?.user && <Link to="/logout" className="a-primary w-fit px-2">
+              <LogOut />
+              <span className="sr-only">Logout</span>
+            </Link>}
           <span className="">
             <ModeToggle className="apply-colors-primary rounded-xl" />
           </span>
@@ -80,6 +84,11 @@ const SignedInNavbar = () => {
           {avatar && <Avatar className="rounded-full " url={avatar} size={28} onPublicRoute={true} />}
           <span className="sr-only">Profile</span>
         </Link>
+
+        {session?.user && <Link to="/logout" className="a-primary w-fit px-2">
+              <LogOut />
+              <span className="sr-only">Logout</span>
+            </Link>}
       </nav>
     </header>
   )

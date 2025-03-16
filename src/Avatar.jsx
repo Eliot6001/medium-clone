@@ -55,8 +55,16 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
       }
 
       const { data, error } = await supabase.storage.from('avatars').download(path);
+      
       if (error) {
         throw error;
+      }
+      else if(data){
+        toast({
+          variant: 'success',
+          description: "Your pfp has been updated!",
+          duration: 1500
+        })
       }
 
       const reader = new FileReader();
@@ -146,7 +154,7 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
   return (
     <div className={"flex flex-col items-center space-y-4 "}>
       {tempURL ? (
-        <span className={cn("inline-block rounded-full overflow-hidden bg-cyan-500 text-white transition-shadow duration-300 shadow-[0_0_8px_4px_rgba(0,255,255,0.4)] hover:shadow-[0_0_12px_6px_rgba(0,255,255,0.6)] focus:outline-none", className)}>
+        <span className={cn("inline-block rounded-full overflow-hidden bg-cyan-500 text-white transition-shadow duration-300 shadow-[0_0_8px_4px_rgba(0,255,255,0.4)] hover:shadow-[0_0_8px_6px_rgba(0,255,255,0.6)] focus:outline-none", className)}>
           <img
             src={tempURL}
             alt="Avatar"

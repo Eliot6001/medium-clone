@@ -1,5 +1,5 @@
 
-import TopNavbar from "@/components/fullComponents/topNavbar";
+import TopNavbar from "@/components/fullComponents/DefaultNavbar";
 import { Button } from "@/components/ui/button";
 import Image from "../assets/img.jpg"
 import Navbar from "@/components/fullComponents/Nav";

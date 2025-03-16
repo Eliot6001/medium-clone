@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSession } from "./context/SupabaseContext";
 import { supabase } from './supabaseClient'
 import { useNavigate, Navigate } from 'react-router-dom'
-import TopNavbar from './components/fullComponents/topNavbar'
+import Nav from './components/fullComponents/Nav'
 import {
   Card,
   CardContent,
@@ -33,7 +33,7 @@ export default function Auth() {
   const navigate = useNavigate()
 
   const handlePassword = (password) => {
-    const allowedPattern = /^[a-zA-Z0-9_\-\.]+$/;
+    const allowedPattern = /^[a-zA-Z0-9_\-.]+$/;
     if (!allowedPattern.test(password)) {
       toast({
         variant: 'destructive',
@@ -52,13 +52,19 @@ export default function Auth() {
   }
 
   const handleReset = async () => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.href}reset`,
     })
     if (error) {
       toast({
         variant: 'destructive',
         description: `There was an error, please try again ${error}`
+      })
+    }
+    else if (data) {
+      toast({
+        title: "success",
+        description: `Check your email for a password recovery link.`,
       })
     }
   }
@@ -89,7 +95,7 @@ export default function Auth() {
   return (
     /*ill need to implement PKCE flow*/
     <div className="flex flex-col min-h-screen bg-background">
-      <TopNavbar />
+      <Nav />
       <div className="w-full flex-1 flex items-center justify-center p-4 apply-colors-primary">
         <Card className="shadow-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150 flex flex-col rounded space-y-4 md:w-[40%] w-80 " >
           <CardHeader>

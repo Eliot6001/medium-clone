@@ -8,7 +8,14 @@
   :first-child {
     margin-top: 0;
   }
-
+  strong {
+    font-weight: 600; // Bold text
+  }
+em {
+  font-style: italic; // Italic text
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+  
   /* Unordered List (ul) Styling */
   ul {
     list-style-type: disc; // Disc bullets
@@ -19,7 +26,7 @@
       margin-bottom: 8px; // Space between list items
     }
   }
-
+ 
   /* Ordered List (ol) Styling */
   ol {
     list-style-type: decimal; // Numbered list
@@ -39,6 +46,10 @@
   p {
     margin-bottom: 16px; // Add space below each paragraph
     line-height: 1.6; // Make text more readable
+    strong {
+      font-weight: 600; // Bold text
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    }
   }
 
   /* Heading (h2) Styling */
@@ -49,6 +60,7 @@
     border-bottom: 2px solid #d1d5db; // Subtle bottom border
     padding-bottom: 4px; // Add some padding under heading
   }
+  
 
   img {
     display: block;
@@ -64,7 +76,7 @@
 
 .editor-wrapper {
   position: relative;
-
+  z-index: 1;
   &.dragging::after {
     content: 'Drop image here';
     position: absolute;
@@ -79,6 +91,12 @@
     font-size: 24px;
     pointer-events: none;
   }
+  strong {
+    font-weight: 600; // Bold text
+  }
+em {
+  font-style: italic; // Italic text
+}
 }
 
 .ProseMirror {

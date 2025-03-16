@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import supabase from './supabaseClient.js'
 import { Navigate, useNavigate } from 'react-router-dom'
-import TopNavbar from './components/fullComponents/topNavbar'
+import Nav from './components/fullComponents/Nav'
 import {
   Card,
   CardContent,
@@ -31,7 +31,7 @@ const ResetPassword = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <TopNavbar />
+      <Nav />
       <div className="w-full flex-1 flex items-center justify-center p-4 apply-colors-primary">
         <Card className="shadow-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200 transition-all duration-150 h-96 flex flex-col rounded" style={{ width: '40%' }}>
           <CardHeader>
