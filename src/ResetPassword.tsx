@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import supabase from './supabaseClient.js'
+import supabase from './supabaseClient'
 import { Navigate, useNavigate } from 'react-router-dom'
 import Nav from './components/fullComponents/Nav'
 import {
@@ -22,13 +22,13 @@ import { useSession } from "./context/SupabaseContext";
 const ResetPassword = () => {
   const [loading, setLoading] = useState(false)
   const { session } = useSession();
-  if (session) return <Navigate to="/" />;
-  const [password, setPassword] = useState('')
-  const [allowed, setAllowed] = useState(false)
 
   const { toast } = useToast()
   const navigate = useNavigate()
+  const [password, setPassword] = useState('')
+  const [allowed, setAllowed] = useState(false)
 
+  if (session) return <Navigate to="/" />;
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Nav />

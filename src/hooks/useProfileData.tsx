@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from "@/components/ui/use-toast"
 import { supabase } from '../supabaseClient'
 import { useSession } from "../context/SupabaseContext";
@@ -10,6 +10,7 @@ export function useProfile() {
   const [username, setUsername] = useState(null);
   const [website, setWebsite] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
+  const [ROLE, setROLE] = useState<"USER" | "MODERATOR" | null>(null);
   const [createdAt, setCreatedat] = useState(null);
 
   const [cachedProfile, setCachedProfile] = useLocalStorage('userProfile', null);
@@ -26,19 +27,19 @@ export function useProfile() {
         const { user } = session
         const createdAt = setCreatedat(user.created_at); 
 
-        //catching
-        if (cachedProfile && (Date.now() - cachedProfile.timestamp < 36000)) {
+        //cache for 1 hour
+        if (cachedProfile && (Date.now() - cachedProfile.timestamp < 3600000)) {
           setUsername(cachedProfile.username);
           setWebsite(cachedProfile.website);
           setAvatarUrl(cachedProfile.avatar_url);
-
+          setROLE(cachedProfile.ROLE);
           setLoading(false);
           return;
         }
 
-        let { data, error, status } = await supabase
+        const { data, error, status } = await supabase
           .from('user_profiles')
-          .select(`username, website, avatar_url`)
+          .select(`username, website, avatar_url, ROLE`)
           .eq('id', user.id)
           .single();
 
@@ -56,6 +57,7 @@ export function useProfile() {
           setUsername(data.username);
           setWebsite(data.website);
           setAvatarUrl(data.avatar_url);
+          setROLE(data.ROLE);
           //cache again
           setCachedProfile({
             ...data,
@@ -84,7 +86,17 @@ export function useProfile() {
       ignore = true;
     };
   }, [session, setCachedProfile, cachedProfile, toast]);
-
-  return { loading, username, website, avatarUrl, createdAt };
+//Memoized in order to prevent unnecessary re-renders
+  return React.useMemo(
+    () => ({
+      loading,
+      username,
+      website,
+      avatarUrl,
+      createdAt,
+      ROLE
+    }),
+    [loading, username, website, avatarUrl,ROLE, createdAt]
+  );
 }
 export default useProfile;

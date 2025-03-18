@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { cn } from './lib/utils'
 import { useLocalStorage } from './hooks/useLocalStorage';
 
-function createBlobUrlFromBase64(base64) {
+function createBlobUrlFromBase64(base64: string): string | null {
   try {
     const [header, base64Data] = base64.split(',');
     const byteCharacters = atob(base64Data);

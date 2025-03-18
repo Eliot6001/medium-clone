@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/supabaseClient'; // Adjust the path according to your setup
+import { supabase } from '../supabaseClient'; // Adjust the path according to your setup
 
 const useAuthSession = () => {
   const [session, setSession] = useState(null);

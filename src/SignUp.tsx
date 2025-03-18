@@ -25,12 +25,12 @@ export default function SignUp() {
   const [password, setPassword] = useState('')
   const [allowed, setAllowed] = useState(false)
 
-  if (session) return <Navigate to="/" />;
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { toast } = useToast()
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   const navigate = useNavigate()
+
+  if (session) return <Navigate to="/" />;
 
   ///
   /// This function checks if the password contains invalid characters
@@ -62,14 +62,14 @@ export default function SignUp() {
         email,
         password,
         options:{
-          emailRedicretURL:`${backendUrl}/auth/confirm`
+          emailRedirectTo:`${backendUrl}/auth/confirm`
         }
       })
 
       if (error) {
         toast({
           variant: 'destructive',
-          description: error.error_description || error.message,
+          description: error.message,
         })
       } else {
         toast({
