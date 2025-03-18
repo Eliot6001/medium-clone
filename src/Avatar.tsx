@@ -34,15 +34,6 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
 
   const [cachedAvatars, setCachedAvatars] = useLocalStorage('cachedAvatars', {});
 
-  useEffect(() => {
-    if (url) downloadImage(url);
-    return () => {
-      if (avatarUrl && avatarUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(avatarUrl);
-      }
-    }
-  }, [url, cachedAvatars]);
-
 
   const downloadImage = useCallback(async (path) => {
     try {
@@ -89,7 +80,20 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
         duration: 1500
       })
     }
-  }, [cachedAvatars, createBlobUrlFromBase64, setCachedAvatars]);
+  }, [cachedAvatars, createBlobUrlFromBase64, setCachedAvatars, toast]);
+
+  useEffect(() => {
+    if (url && !/^https?:\/\//i.test(url)) {
+      downloadImage(url);
+    }
+    settempURL(url)
+    setAvatarUrl(url)
+    return () => {
+      if (avatarUrl && avatarUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(avatarUrl);
+      }
+    }
+  }, [url, cachedAvatars, avatarUrl, downloadImage]);
 
   async function uploadAvatar(event) {
     if (onPublicRoute) return;

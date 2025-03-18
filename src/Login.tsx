@@ -17,20 +17,23 @@ import { Input } from '@/components/ui/input'
 import { LoaderCircle } from 'lucide-react'
 import { useToast } from "@/components/ui/use-toast"
 import { Separator } from "@/components/ui/separator"
+import GoogleLogo from '@/components/GoogleLogo'
 
 export default function Auth() {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState(''); // Add password state
   const [allowed, setAllowed] = useState(false);
 
   const [reset, setReset] = useState(false);
+  const { toast } = useToast()
+  const navigate = useNavigate()
 
   const { session } = useSession();
   if (session) return <Navigate to="/" />;
 
-  const { toast } = useToast()
-  const navigate = useNavigate()
 
   const handlePassword = (password) => {
     const allowedPattern = /^[a-zA-Z0-9_\-.]+$/;
@@ -91,7 +94,25 @@ export default function Auth() {
       setLoading(false)
     }
   }
-
+  const LoginWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+        redirectTo: `${backendUrl}/auth/callback`
+      },
+    });
+    if (data.url) {
+      window.location.href = data.url; // full redirect
+    }
+    if(error) toast({
+      variant: 'destructive',
+      description: `An error ${error}`
+    })
+  }
   return (
     /*ill need to implement PKCE flow*/
     <div className="flex flex-col min-h-screen bg-background">
@@ -169,7 +190,20 @@ export default function Auth() {
               <Separator />
             </form>
           </CardContent>
-          <CardFooter className="flex items-center space-x-2 ">
+          <CardFooter className="flex items-start space-y-5 flex-col ">
+            <span>
+                <Button
+                className="flex items-center justify-center w-full py-2 whitespace-nowrap dark:text-zinc-300 text-zinc-800
+                dark:hover:text-zinc-50 hover:text-zinc-900 font-medium
+                dark:bg-zinc-800 bg-zinc-200 dark:hover:bg-zinc-700 hover:bg-zinc-300
+                px-4 rounded-xl transition-colors duration-150 border
+                dark:border-zinc-600 border-zinc-400 antialiased"
+                onClick={LoginWithGoogle}
+                >
+                <GoogleLogo className="max-h-5 max-w-5 w-5 h-5 mr-2" />
+                Login with Google
+                </Button>
+            </span>
             <p className="text-sm text-muted-foreground mr-auto">
               Don't have an account?{' '}
               <a href="#" className="text-primary hover:underline ml-0.5 font-medium text-grey-600 hover:text-grey-800">

@@ -94,9 +94,10 @@ export function useProfile() {
       website,
       avatarUrl,
       createdAt,
-      ROLE
+      ROLE,
+      clearCache: () => setCachedProfile(null),
     }),
-    [loading, username, website, avatarUrl,ROLE, createdAt]
+    [loading, username, website, avatarUrl,ROLE, createdAt,setCachedProfile]
   );
 }
 export default useProfile;
