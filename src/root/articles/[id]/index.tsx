@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -42,6 +43,31 @@ const Article = () => {
   // For batching: store engaged segments in a Set, and hold a batch timer
   const engagementBatchRef = useRef<Set<number>>(new Set());
   const batchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isViewLogged = useRef(false);
+
+  useEffect(() => {
+    if (isViewLogged.current || loading || !article || !session?.user?.id) return;
+  
+    // Send view history request
+    axios.post(`${backendUrl}/profiles/history/`, {
+      postid: id,
+      userid: session.user.id
+    },
+    {
+      headers:{
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    }
+  
+  )
+    .then(() => {
+      console.log("View recorded in history table");
+    })
+    .catch((error) => {
+      console.error("Failed to record view:", error);
+    });
+  
+  }, [loading, article, session?.user?.id, id]);
 
   useEffect(() => {
     markerRefs.current = Array(5).fill(null);
@@ -92,10 +118,14 @@ const Article = () => {
               engagedSegmentsRef.current[markerIndex] = true;
               engagementBatchRef.current.add(markerIndex);
               // If all segments are engaged, flush immediately
+              console.log("Engagement batch size:", engagementBatchRef.current.size);
               if (engagementBatchRef.current.size === 5) {
                 flushEngagementData();
               }
-            }, 20000); // 20 seconds per segment (adjust as needed)
+              else if (!batchTimerRef.current) {
+                batchTimerRef.current = setTimeout(flushEngagementData, 30000); // 30s batch window
+              }
+            }, 10000); // 10 seconds engagement per segment 
           }
         } else {
           if (timersRef.current[markerIndex]) {
@@ -105,6 +135,16 @@ const Article = () => {
         }
       });
     };
+    const handleBeforeUnload = () => {
+      // Flush any accumulated engagement data before the page unloads
+      console.log("Flushing engagement data on unload");
+      
+      if (engagementBatchRef.current.size > 0) {
+        flushEngagementData();
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     const flushEngagementData = () => {
       
       if (engagementBatchRef.current.size > 0) {
@@ -118,6 +158,9 @@ const Article = () => {
         axios.post(`${backendUrl}/profiles/engagement/`, payload)
           .then(() => {
             console.log("Engagement data sent:", payload);
+            engagementBatchRef.current.forEach(index => {
+              engagedSegmentsRef.current[index] = true;
+            });
           })
           .catch((err) => {
             console.error("Failed to send engagement data:", err);
@@ -129,12 +172,30 @@ const Article = () => {
         batchTimerRef.current = null;
       }
     };
-    const observer = new IntersectionObserver(observerCallback, { threshold: 0.5 });
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        flushEngagementData();
+      }
+    };
+  
+    const observer = new IntersectionObserver(observerCallback, { 
+      threshold: 0.1, // More sensitive trigger
+      rootMargin: '0px 0px -50% 0px' // Track when element enters middle 50% of viewport
+    });
+
     markerRefs.current.forEach((marker) => {
       if (marker) observer.observe(marker);
     });
 
-    return () => observer.disconnect();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', flushEngagementData);
+    
+    return () => {
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', flushEngagementData);
+      flushEngagementData(); // Final flush on unmount
+    };
   }, [loading, article, session?.user.id, id]);
 
   const RemoveArticle = async () => {
@@ -256,9 +317,10 @@ const Article = () => {
                     style={{
                       position: "absolute",
                       top: `${(index * 100) / 5}%`,
-                      height: "5px", // Increased from 1px for better detection
+                      height: "10px", // Increased from 1px for better detection
                       width: "100%",
                       backgroundColor: "rgba(255,0,0,0.3)", // Debug color to see markers
+                      pointerEvents: 'none', 
                     }}
                     data-marker-index={index}
                     className="marker" 

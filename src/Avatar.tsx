@@ -197,6 +197,8 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
             alt="Avatar"
             className="shadow-lg object-cover"
             style={{ height: size, width: size }}
+            loading="lazy"
+            referrerPolicy="no-referrer"
           />
         </span>
       ) : (

@@ -50,6 +50,7 @@ const Profile = () => {
         pfpUrl={avatarUrl} 
         time_joined={createdAt} 
         website={website} 
+        
       />
     </div>
   </div>

@@ -2,7 +2,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Facebook, Github, Instagram, Twitter, X } from 'lucide-react'
 import { cn } from '@/lib/utils';
 import  Avatar  from "@/Avatar";
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo} from 'react'
 
 interface ProfileData {
   pfpUrl?: string;
@@ -23,22 +23,31 @@ const ProfileData = ({ pfpUrl, username, socials = {}, website,bio, time_joined,
   const time = time_joined ? new Date(time_joined).toLocaleDateString() : 'Err'
 
   useEffect(() => {
-    const updatedSocialmedia: Partial<ProfileData['socials']> = {};
+    if (!socials) return;
 
-    Object.entries(socials).forEach(([platform, link]) => {
-      if (link) {
-        updatedSocialmedia[platform as keyof ProfileData['socials']] = link;
+  const hasValidLink = Object.values(socials).some(
+    (link) => typeof link === 'string' && link.trim() !== ''
+  );
+  if (!hasValidLink) return;
+  setSocialmedia((prev) => {
+    const updated = Object.entries(socials).reduce((acc, [platform, link]) => {
+      if (link && typeof link === 'string' && link.trim() !== '') {
+        acc[platform as keyof ProfileData['socials']] = link;
       }
-    });
+      return acc;
+    }, {} as Partial<ProfileData['socials']>);
 
-    setSocialmedia(updatedSocialmedia);
-  }, [])
+    // Only update if there's actually a difference
+    const isDifferent = JSON.stringify(prev) !== JSON.stringify(updated);
+    return isDifferent ? updated : prev;
+  });
+  }, [socials]); 
 
   return (
     <Card className="w-full shadow-lg border border-gray-300 dark:border-zinc-600 bg-gray-200 dark:bg-zinc-700 rounded-lg overflow-hidden">
     <CardHeader className="px-6 py-4">
       <CardTitle className="flex items-center space-x-4">
-        <Avatar url={pfpUrl} size={80} onPublicRoute />
+        <Avatar url={pfpUrl as string} size={80} onPublicRoute />
         <div>
           <p className="text-primary text-lg font-semibold leading-7">{username}</p>
           <p className="text-sm text-zinc-900/50 dark:text-zinc-200/50">
