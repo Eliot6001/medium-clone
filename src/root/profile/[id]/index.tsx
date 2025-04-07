@@ -91,7 +91,7 @@ const Profile = () => {
           <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
             Latest Articles
           </h4>
-          {posts?.map(post => <ArticleCard title={post.title} previewText={post.content.substring(0, 100)} />)}
+          {posts && posts?.map(post => <ArticleCard title={post.title} previewText={post.content.substring(0, 100)} />)}
         </div>
         <div className="w-11/12 lg:w-3/12 py-4 lg:space-y-5 space-y-3 ">
           <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">

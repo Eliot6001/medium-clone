@@ -1,34 +1,32 @@
 import { useNavigate } from "react-router-dom";
-
 import { cn } from '@/lib/utils'
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card'
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-//meant to make a smaller overview of article
 
 interface ArticleCardProps {
   insideProfile?: boolean;
   className?: string;
-  authorName?: string | undefined;
-  authorImage?: string | undefined;
+  authorName?: string;
+  authorImage?: string;
   title: string;
   previewText: string;
   imageUrl?: string;
-  articleId: string; // Add articleId to props
+  articleId: string;
   rating: number;
+  publishedAt?: Date; // Added timestamp for article
 }
 
 const ArticleCard = ({ 
-  insideProfile = true, 
+  insideProfile = false, // Changed default to false as it seems more common
   className = '', 
-  authorName = 'Anon', 
-  authorImage, 
+  authorName = 'Anonymous', // More formal anonymous name
+  authorImage = '', // Default empty string for image
   title, 
   previewText, 
-  imageUrl, 
+  imageUrl = '/placeholder-image.jpg', // Added default placeholder
   articleId,
-  rating = 0
+  rating = 0,
+  publishedAt = new Date(), // Default to current date
 }: ArticleCardProps) => {
   const navigate = useNavigate();
 

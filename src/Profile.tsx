@@ -41,35 +41,58 @@ const Profile = () => {
   return (
     <>
       <SignedInNavbar />
-      <main className="flex lg:space-x-6 container py-5 lg:flex-row flex-col">
-        <div className="w-11/12 lg:w-3/12">
-          <ProfileData username={username} pfpUrl={avatarUrl} time_joined={createdAt} website={website} />
-        </div>
-        <div className="flex-1 lg:py-6 lg:px-12 py-4 lg:space-y-5 space-y-3 w-11/12">
-          <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
-            Latest Articles
-          </h4>
-          {posts.length > 0 ? (
-        posts.map((post) => (
-          <ArticleCard 
-          key={post.postid} 
-          title={post.title} 
-          previewText={post.content.substring(0, 100)}
-          articleId={post.postid}
-          rating={post?.article_ratings[0]?.sum}
-          />
-        ))
-      ) : (
-        <p>No articles found.</p>
-      )}
-        </div>
-        <div className="w-11/12 lg:w-3/12 py-4 lg:space-y-5 space-y-3">
-          <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
-            Related Articles
-          </h4>
-          <SuggestionCard />
-        </div>
-      </main>
+      <main className="container mx-auto flex flex-col lg:flex-row gap-6 py-5 bg-white dark:bg-zinc-800">
+  {/* Profile Card */}
+  <div className="w-full lg:w-1/4">
+    <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
+      <ProfileData 
+        username={username} 
+        pfpUrl={avatarUrl} 
+        time_joined={createdAt} 
+        website={website} 
+      />
+    </div>
+  </div>
+
+  {/* Latest Articles Card */}
+  <div className="flex-1">
+    <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
+      <h4 className="mb-4 text-xl font-semibold tracking-tight text-primary dark:text-zinc-200 border-b border-gray-300 dark:border-zinc-600 pb-2">
+        Latest Articles
+      </h4>
+      <div className="space-y-4">
+        {posts.length > 0 ? (
+          posts.map((post) => (
+            <ArticleCard 
+              key={post.postid} 
+              title={post.title} 
+              previewText={post.content.substring(0, 100)}
+              articleId={post.postid}
+              rating={post?.article_ratings?.[0]?.sum}
+              className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
+            />
+          ))
+        ) : (
+          <p className="text-zinc-800 dark:text-zinc-200">No articles found.</p>
+        )}
+      </div>
+    </div>
+  </div>
+
+  {/* Related Articles Card */}
+  <div className="w-full lg:w-1/4">
+    <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
+      <h4 className="mb-4 text-xl font-semibold tracking-tight text-primary dark:text-zinc-200 border-b border-gray-300 dark:border-zinc-600 pb-2">
+        Related Articles
+      </h4>
+      <SuggestionCard 
+        className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all" 
+      />
+    </div>
+  </div>
+</main>
+
+
     </>
   );
 };

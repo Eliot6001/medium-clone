@@ -1,97 +1,143 @@
-import { Link } from 'react-router-dom'
-import Logo from "@/components/logo.jsx"
-import { ModeToggle } from "@/components/mode-toggle"
-import { UserCircle, Bell, PenSquare, MenuIcon, LogOut } from 'lucide-react'
-import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet'
+import { Link } from "react-router-dom";
+import Logo from "@/components/logo";
+import { ModeToggle } from "@/components/mode-toggle";
+import { UserCircle, Bell, PenSquare, MenuIcon, LogOut } from "lucide-react";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { useSession } from '@/context/SupabaseContext'
-import useProfile from '@/hooks/useProfileData'
-import { useEffect, useState } from 'react'
-import Avatar from '../../Avatar'
-import { cn } from '@/lib/utils'
+import { useSession } from "@/context/SupabaseContext";
+import useProfile from "@/hooks/useProfileData";
+import { useEffect, useState } from "react";
+import Avatar from "../../Avatar";
+import { cn } from "@/lib/utils";
+import SearchButton from "./searchButton";
 
 const SignedInNavbar = () => {
   const { session } = useSession();
   const [avatar, setAvatar] = useState<string | null>(null);
-
   const { loading, avatarUrl } = useProfile();
 
   useEffect(() => {
-    if (avatarUrl) setAvatar(avatarUrl)
-  }, [loading, avatarUrl])
+    if (avatarUrl) setAvatar(avatarUrl);
+  }, [loading, avatarUrl]);
 
   return (
-    <header className="container flex h-20 w-full rounded shrink-0 items-center px-4 md:px-6 apply-colors-secondary dark:bg-zinc-950">
+    <header className="container flex h-20 w-full items-center px-4 md:px-6 bg-white dark:bg-zinc-950 shadow-sm">
+      {/* Mobile Navigation */}
       <Sheet>
-        <SheetTrigger asChild >
-          <Button variant="outline" size="icon" className="rounded-xl lg:hidden">
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-xl lg:hidden"
+            aria-label="Open navigation menu"
+          >
             <MenuIcon className="h-6 w-6" />
-            <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="h-screen w-20 flex px-4 flex-col">
-          
-          <Link to="/home" className="ml-2 lg:flex" >
+        <SheetContent
+          side="left"
+          className="flex h-screen w-20 flex-col px-4 py-6 gap-6"
+        >
+          <Link to="/home" className="flex items-center justify-center">
             <Logo className="w-8 h-6" />
             <span className="sr-only">Thread</span>
           </Link>
-
-          <div className="grid gap-2 py-6 justify-center">
-            <Link to="#" className="a-primary w-fit flex gap-2 px-2" >
-              <PenSquare />
-              <span className="sr-only">Write</span>
-            </Link>
-
-            <Link to="/notifications" className="a-primary w-fit px-2">
-              <Bell />
+          <div className="flex flex-col items-center gap-6">
+          <Link
+            to="/write"
+            className="a-primary group inline-flex items-center overflow-hidden transition-all duration-300"
+            aria-label="Write"
+          >
+            <PenSquare className="h-5 w-5" />
+            <span className="ml-2 max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 group-hover:max-w-[4rem] group-hover:opacity-100 opacity-0">
+              Write
+            </span>
+          </Link>
+            <Link
+              to="/notifications"
+              className="a-primary flex flex-col items-center"
+            >
+              <Bell className="h-5 w-5" />
               <span className="sr-only">Notifications</span>
             </Link>
-
-            <Link to="/profile" className={cn("w-full", !avatar && 'a-primary')}>
-              {!avatar && <UserCircle />}
-              {avatar && <Avatar url={avatar} size={28} onPublicRoute={true} />}
+            <Link
+              to="/profile"
+              className={cn(
+                "flex flex-col items-center",
+                !avatar && "a-primary"
+              )}
+            >
+              {!avatar && <UserCircle className="h-5 w-5" />}
+              {avatar && <Avatar url={avatar} size={28} onPublicRoute />}
               <span className="sr-only">Profile</span>
             </Link>
-
           </div>
-          <div className="flex-1 h-auto px-2 w-fit" />
-          {session?.user && <Link to="/logout" className="a-primary w-fit px-2">
-              <LogOut />
-              <span className="sr-only">Logout</span>
-            </Link>}
-          <span className="">
+          <div className="mt-auto flex flex-col items-center gap-4">
+            {session?.user && (
+              <Link to="/logout" className="a-primary" aria-label="Logout">
+                <LogOut className="h-5 w-5" />
+              </Link>
+            )}
             <ModeToggle className="apply-colors-primary rounded-xl" />
-          </span>
+          </div>
         </SheetContent>
+        <div className="sm:flex lg:hidden flex-1 justify-start ml-10 ">
+          <SearchButton />
+        </div>
       </Sheet>
 
-      <Link to="/home" className="mr-6 lg:flex hidden">
-        <Logo className="w-8 h-6" />
-        <span className="sr-only">Thread</span>
-      </Link>
-      <nav className="ml-auto items-center gap-6 lg:flex hidden">
-        <Link to="/write" className="a-primary">
-          <PenSquare />
-          <span className="sr-only">Write</span>
+      {/* Desktop Navigation */}
+      <div className="lg:flex flex-1 items-center justify-between hidden">
+        <Link to="/home" className="hidden lg:flex items-center ">
+          <Logo className="w-8 h-6" />
+          <span className="sr-only">Thread</span>
         </Link>
-        <Link to="/notifications" className="a-primary">
-          <Bell />
-          <span className="sr-only">Notifications</span>
-        </Link>
-        <ModeToggle className="apply-colors-primary rounded-xl" />
-        <Link to="/profile" className={cn("rounded-xl", !avatar && 'a-primary')}>
-          {!avatar && <UserCircle />}
-          {avatar && <Avatar className="rounded-full " url={avatar} size={28} onPublicRoute={true} />}
-          <span className="sr-only">Profile</span>
-        </Link>
-
-        {session?.user && <Link to="/logout" className="a-primary w-fit px-2">
-              <LogOut />
-              <span className="sr-only">Logout</span>
-            </Link>}
-      </nav>
+        <div className="flex flex-1 justify-start ml-10 ">
+          <SearchButton />
+        </div>
+        <nav className="flex items-center gap-5 ">
+          <Link
+            to="/write"
+            className="a-primary group inline-flex items-center overflow-hidden transition-all duration-300"
+            aria-label="Write"
+          >
+            <PenSquare className="h-5 w-5" />
+            <span className="ml-2 max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 group-hover:max-w-[4rem] group-hover:opacity-100 opacity-0">
+              Write
+            </span>
+          </Link>
+          <Link
+            to="/notifications"
+            className="a-primary"
+            aria-label="Notifications"
+          >
+            <Bell className="h-5 w-5" />
+          </Link>
+          <Link
+            to="/profile"
+            className={cn("rounded-xl", !avatar && "a-primary")}
+            aria-label="Profile"
+          >
+            {!avatar && <UserCircle className="h-5 w-5" />}
+            {avatar && (
+              <Avatar
+                className="rounded-full"
+                url={avatar}
+                size={28}
+                onPublicRoute
+              />
+            )}
+          </Link>
+          {session?.user && (
+            <Link to="/logout" className="a-primary" aria-label="Logout">
+              <LogOut className="h-5 w-5" />
+            </Link>
+          )}
+          <ModeToggle className="apply-colors-primary rounded-xl" />
+        </nav>
+      </div>
     </header>
-  )
-}
+  );
+};
 
-export default SignedInNavbar
+export default SignedInNavbar;

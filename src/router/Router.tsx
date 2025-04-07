@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import HomePage from "../HomePage";
 import Root from '../root/app'
 import SignInPage from "../Login";
 import SignUpPage from "../SignUp";
@@ -15,6 +14,7 @@ import Write from '@/root/write'
 import EditArticle from "@/root/articles/edit/[id]";
 import Article from "@/root/articles/[id]";
 import Userprofile from "@/root/profile/[id]";
+import Search from "@/root/search/[query]";
 
 const router = createBrowserRouter([
   // I recommend you reflect the routes here in the pages folder
@@ -55,7 +55,10 @@ const router = createBrowserRouter([
         path: "/profile/:id", // Dynamic route for articles with an ID
         element: <Userprofile />,
       },
-
+     {
+      path: "/search",
+      element: <Search />
+     },
 
       // Auth Protected routes
       {

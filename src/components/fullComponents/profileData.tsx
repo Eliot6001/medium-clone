@@ -35,48 +35,71 @@ const ProfileData = ({ pfpUrl, username, socials = {}, website,bio, time_joined,
   }, [])
 
   return (
-    <Card className="shadow dark:shadow-zinc-800 shadow-zinc-300 w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-3">
-          <Avatar url={pfpUrl}  size={80} onPublicRoute />
-          <span>
-            <p className="text-primary text-normal leading-7 [&:not(:first-child)]:mt-6">{username}</p>
-            <p className="dark:text-zinc-200/50 hover:dark:text-zinc-200/50 hover:text-zinc-900/50 text-zinc-900/50 text-base"> <small>Joined at: {time} </small> </p>
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-0.5">
-        <div className="text-lg font-semibold">About</div>
-        <p className={cn("text-base leading-7 [&:not(:first-child)]:mt-6", !bio && 'text-muted text-zinc-900/45 dark:text-zinc-200/45')}>{bio ? bio : 'There is no information.'}</p>
-        {website && <span className="flex  flex-col align-center">
-          <p className="w-fit text-sm mt-2"> Personal Website: </p>
-          <a className="" href={website} target={"_blank"} rel="noopener noreferrer">{website} </a>
-        </span>}
-      </CardContent>
-      <CardFooter className="space-x-2 flex items-center select-none">
-        {Socialmedia?.ig && (
-          <a href={Socialmedia?.ig} target="_blank" rel="noopener noreferrer">
-            <span className="a-secondary">
-              <Instagram />
-            </span>
+    <Card className="w-full shadow-lg border border-gray-300 dark:border-zinc-600 bg-gray-200 dark:bg-zinc-700 rounded-lg overflow-hidden">
+    <CardHeader className="px-6 py-4">
+      <CardTitle className="flex items-center space-x-4">
+        <Avatar url={pfpUrl} size={80} onPublicRoute />
+        <div>
+          <p className="text-primary text-lg font-semibold leading-7">{username}</p>
+          <p className="text-sm text-zinc-900/50 dark:text-zinc-200/50">
+            <small>Joined at: {time}</small>
+          </p>
+        </div>
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="px-6 py-4">
+      <div className="text-lg font-semibold mb-2">About</div>
+      <p className={cn("text-base leading-7", !bio && "text-zinc-900/45 dark:text-zinc-200/45")}>
+        {bio ? bio : "There is no information."}
+      </p>
+      {website && (
+        <div className="mt-4">
+          <p className="text-sm font-medium">Personal Website:</p>
+          <a
+            href={website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            {website}
           </a>
-        )}
-        {Socialmedia?.twitter && (
-          <a href={Socialmedia?.twitter} target="_blank" rel="noopener noreferrer">
-            <span className="a-secondary">
-              <Twitter />
-            </span>
-          </a>
-        )}
-        {Socialmedia?.github && (
-          <a href={Socialmedia?.github} target="_blank" rel="noopener noreferrer">
-            <span className="a-secondary">
-              <Github />
-            </span>
-          </a>
-        )}      
-      </CardFooter>
-    </Card>
+        </div>
+      )}
+    </CardContent>
+    <CardFooter className="px-6 py-4 bg-gray-100 dark:bg-zinc-700 flex items-center space-x-3">
+      {Socialmedia?.ig && (
+        <a
+          href={Socialmedia.ig}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-zinc-800 dark:text-zinc-200 hover:text-blue-500"
+        >
+          <Instagram />
+        </a>
+      )}
+      {Socialmedia?.twitter && (
+        <a
+          href={Socialmedia.twitter}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-zinc-800 dark:text-zinc-200 hover:text-blue-500"
+        >
+          <Twitter />
+        </a>
+      )}
+      {Socialmedia?.github && (
+        <a
+          href={Socialmedia.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-zinc-800 dark:text-zinc-200 hover:text-blue-500"
+        >
+          <Github />
+        </a>
+      )}
+    </CardFooter>
+  </Card>
+  
   )
 }
 
