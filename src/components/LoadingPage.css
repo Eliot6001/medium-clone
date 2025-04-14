@@ -1,0 +1,40 @@
+
+:root {
+
+    --widthSquare: 20px; 
+  
+    --time: 2000ms;
+    --animation-settings: var(--time) ease infinite; 
+  }
+
+
+.infinite-scroll::before, 
+.infinite-scroll::after {
+  content: ""; 
+  position: absolute;
+  width: var(--widthSquare);
+  height: 100%;
+ 
+}
+
+.infinite-scroll::before {
+  left: calc(50% - var(--widthSquare) / 2); 
+  animation: moveBefore var(--animation-settings); 
+}
+
+.infinite-scroll::after {
+  left: 100%; 
+  animation: moveAfter var(--animation-settings); 
+}
+
+@keyframes moveBefore {
+    0% { left: calc(50% - var(--widthSquare) / 2); }
+    25%, 50%, 75% { left: 0; }
+    100% { left: calc(var(--widthSquare) * -2); } 
+  }
+  
+  @keyframes moveAfter {
+    0%, 25% { left: 100%; }
+    50%, 75% { left: calc(100% - var(--widthSquare)); }
+    100% { left: calc(50% - var(--widthSquare) / 2); }
+  }

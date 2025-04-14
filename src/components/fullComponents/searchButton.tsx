@@ -50,7 +50,7 @@ const SearchButton = ({className}: {className?: string}) => {
           render={({ field }) => (
             <FormItem>
                <FormControl>
-               <div className={cn("flex align-center items-center transition-transform duration-150 ease-in relative", 
+               <div className={cn("flex align-center items-center transition-all duration-150 ease-in relative", 
                 !isExpanded && "w-4 pl-0" )}>
                  <button
                     type="button"

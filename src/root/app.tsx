@@ -3,11 +3,20 @@ import TopNavbar from "@/components/fullComponents/DefaultNavbar";
 import { Button } from "@/components/ui/button";
 import Image from "../assets/img.jpg"
 import Navbar from "@/components/fullComponents/Nav";
+import Sphere from '@/components/sphere'
+import { useTheme } from "@/components/theme-provider";
+import { AndroidToggle } from "@/components/ui/AndroidToggle";
+import { useState } from "react";
+
+
 const Rootpage = () => {
-
+  const darkMode = useTheme();
+  const [disable, setDisable] = useState<boolean>(false);
+  const setToggle = () => {
+    setDisable(!disable)
+  }
   return (
-
-    <div className="min-h-screen flex flex-col w-screen">
+    <div className="min-h-screen flex flex-col w-screen ">
       <Navbar />
       <main className="flex w-full justify-center flex-1 lg:px-8 px-2 apply-colors-primary">
         <div className="flex flex-col justify-center items-start w-full lg:w-1/2 py-16 ">
@@ -21,12 +30,14 @@ const Rootpage = () => {
             Start reading
           </Button>
         </div>
-        <div className="lg:flex hidden h-screen justify-center lg:h-full lg:w-full ml-auto relative">
-          <div className="w-1/2 ml-auto relative">
-            <img src={Image} className="w-full object-contain" alt="Human stories" />
-            <div className="absolute inset-0 bg-black bg-opacity-40" />
+        <div className="lg:flex flex-col hidden h-screen justify-center lg:h-full lg:w-full ml-auto relative p-3 space-y-2">
+          <Sphere isDark={darkMode.theme === "dark"} disableForwarding={disable}/>
+          <div className="space-x-6 flex"> 
+            <p>Disable Forwarding <small> (-messing around mode-)</small>:</p>
+            <AndroidToggle onCheckedChange={setToggle} checked={disable}/>
           </div>
         </div>
+        
       </main>
       {/* Footer */}
       <footer className="flex justify-center space-x-6 py-4 text-sm text-gray-500 border-t apply-colors-secondary">

@@ -4,6 +4,7 @@ import supabase from "@/supabaseClient";
 import { useSearchParams } from "react-router-dom";
 import ArticleCard from "@/components/fullComponents/ArticleCard";
 import LoadingPage from "@/components/LoadingPage";
+import SuggestionCard from '@/components/fullComponents/SuggestionCard'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -47,24 +48,36 @@ const Search = () => {
   return (
     <>
       <SignedInNavbar />
-      <main className="flex lg:space-x-6 container py-5 lg:flex-row flex-col">
-        {articles.map((article, index) => {
-        const excerpt = extractExcerpt(article.content, 100);
-        return (
-          <ArticleCard
-            key={article.postid || index}
-            articleId={article.postid}
-            insideProfile={false}
-            className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
-            title={article.title}
-            previewText={excerpt}
-            author={article.author || "Unknown"}
-            date={new Date(article.created_at).toLocaleDateString()}
-            imageUrl={"https://placehold.co/600x400/EEE/31343C"}
-          />
-        );
-      })}
-      </main>
+      <div className="flex lg:flex-row flex-col-reverse spacep-x-2 apply-colors-primary">
+        <main className="flex flex-col container py-5  lg:px-8 px-2  space-y-4  ">
+          <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
+              Found Articles
+            </h4>
+          {articles.map((article, index) => {
+          const excerpt = extractExcerpt(article.content, 100);
+          return (
+            <ArticleCard
+              key={article.postid || index}
+              articleId={article.postid}
+              insideProfile={false}
+              className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all "
+              title={article.title}
+              previewText={excerpt}
+              author={article.author || "Unknown"}
+              date={new Date(article.created_at).toLocaleDateString()}
+              imageUrl={"https://placehold.co/600x400/EEE/31343C"}
+            />
+          );
+        })}
+        
+        </main>
+        <div className="lg:w-1/3 lg:space-y-5 space-y-3 lg:p-2 lg:py-5 p-3 py-4">
+            <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
+              Related Articles
+            </h4>
+            <SuggestionCard />
+          </div>
+      </div>
     </>
   );
 };

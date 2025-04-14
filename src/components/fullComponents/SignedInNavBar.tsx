@@ -38,7 +38,7 @@ const SignedInNavbar = () => {
           side="left"
           className="flex h-screen w-20 flex-col px-4 py-6 gap-6"
         >
-          <Link to="/home" className="flex items-center justify-center">
+          <Link to="/main" className="flex items-center justify-center">
             <Logo className="w-8 h-6" />
             <span className="sr-only">Thread</span>
           </Link>
@@ -88,7 +88,7 @@ const SignedInNavbar = () => {
 
       {/* Desktop Navigation */}
       <div className="lg:flex flex-1 items-center justify-between hidden">
-        <Link to="/home" className="hidden lg:flex items-center ">
+        <Link to="/main" className="hidden lg:flex items-center ">
           <Logo className="w-8 h-6" />
           <span className="sr-only">Thread</span>
         </Link>

@@ -51,6 +51,8 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        'custom-bg': '#e9c46a', 
+        'custom-contrast': '#292930', 
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -66,11 +68,40 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        roll: {
+          '0%': { transform: 'translate(0, 0) rotate(0)' },
+          '25%': { transform: 'translateX(-20px)' }, 
+          '50%': { transform: 'rotate(90deg) translateY(20px)' },
+          '75%': { transform: 'rotate(180deg) translateY(20px)' }, 
+          '100%': { transform: 'rotate(180deg) translate(20px, 20px)' }, 
+        },
+        moveBefore: {
+          '0%': { left: 'calc(50% - 10px)' }, 
+          '25%, 50%, 75%': { left: '0' },
+          '100%': { left: '-30px' }, 
+        },
+        moveAfter: {
+          '0%, 25%': { left: '100%' },
+          '50%, 75%': { left: 'calc(100% - 20px)' }, 
+          '100%': { left: 'calc(50% - 10px)' }, 
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        roll: 'roll 2000ms ease infinite',
+        moveBefore: 'moveBefore 2000ms ease infinite',
+        moveAfter: 'moveAfter 2000ms ease infinite',
       },
+
+      spacing: {
+        
+        'square': '5rem', // Tailwind uses 1 = 0.25rem = 4px, so 20px is '5'
+      },
+      scale: {
+         // Add the scale value used in the media query
+        '130': '1.3',
+      }
     },
   },
   plugins: [

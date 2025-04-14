@@ -16,7 +16,7 @@ const TopNavbar = () => {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="px-3 h-screen w-1/3 flex flex-col">
-            <Link href="#" className="mr-6 lg:flex" >
+            <Link href="/main" className="mr-6 lg:flex" >
               <Logo className="w-8 h-6" />
               <span className="sr-only">Thread</span>
             </Link>
@@ -41,11 +41,11 @@ const TopNavbar = () => {
           </SheetContent>
         </Sheet>
 
-        <Link href="#" className="mr-6 hidden lg:flex " >
+        <Link href="/main" className="mr-6 hidden lg:flex " >
           <Logo className="w-8 h-6 " />
           <span className="sr-only">Thread</span>
         </Link>
-        <nav className="ml-auto flex items-center gap-6 hidden lg:flex">
+        <nav className="ml-auto items-center gap-6 hidden lg:flex">
           <Link to='/write' className="a-primary" >
             Write
           </Link>
