@@ -47,14 +47,18 @@ const ProfileData = ({ pfpUrl, username, socials = {}, website,bio, time_joined,
     <Card className="w-full shadow-lg border border-gray-300 dark:border-zinc-600 bg-gray-200 dark:bg-zinc-700 rounded-lg overflow-hidden">
     <CardHeader className="px-6 py-4">
       <CardTitle className="flex items-center space-x-4">
-        <Avatar url={pfpUrl as string} size={80} onPublicRoute />
+        <div>
+        <Avatar url={pfpUrl as string} size={80} onPublicRoute /></div>
         <div>
           <p className="text-primary text-lg font-semibold leading-7">{username}</p>
           <p className="text-sm text-zinc-900/50 dark:text-zinc-200/50">
             <small>Joined at: {time}</small>
           </p>
         </div>
+        
+
       </CardTitle>
+
     </CardHeader>
     <CardContent className="px-6 py-4">
       <div className="text-lg font-semibold mb-2">About</div>

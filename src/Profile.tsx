@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {toast} from '@/components/ui/use-toast';
 import { useSession } from './context/SupabaseContext';
+import {  History, SettingsIcon, X } from 'lucide-react';
+import IconLink from './components/fullComponents/IconLink';
 
 const Profile = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -37,22 +39,27 @@ const Profile = () => {
   }, [session?.user.id, backendUrl]);
 
   if (loading) return <p>Loading...</p>;
-
+  
   return (
     <>
       <SignedInNavbar />
       <main className="container mx-auto flex flex-col lg:flex-row gap-6 py-5 bg-white dark:bg-zinc-800">
   {/* Profile Card */}
-  <div className="w-full lg:w-1/4">
+  <div className="w-full lg:w-1/4 space-y-4">
     <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
       <ProfileData 
         username={username} 
         pfpUrl={avatarUrl} 
         time_joined={createdAt} 
         website={website} 
-        
       />
+  
     </div>
+    <div className="bg-gray-200 dark:bg-zinc-700 flex flex-row space-x-2 rounded-full shadow-lg p-1 border border-gray-300 dark:border-zinc-600">
+      <IconLink  href="/account" > <SettingsIcon size={24} /> </IconLink>
+      <IconLink href="/articles/deleted"  > <X size={24} /> </IconLink>
+      <IconLink href="/articles/history" > <History size={24} /> </IconLink>
+  </div>
   </div>
 
   {/* Latest Articles Card */}

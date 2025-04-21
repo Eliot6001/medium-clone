@@ -12,9 +12,11 @@ import Reset from '../reset'
 import Main from "@/root/main";
 import Write from '@/root/write'
 import EditArticle from "@/root/articles/edit/[id]";
+import DeletedArticles from '@/root/articles/deleted'
 import Article from "@/root/articles/[id]";
 import Userprofile from "@/root/profile/[id]";
 import Search from "@/root/search/[query]";
+import HistoryData from "@/root/articles/history";
 
 const router = createBrowserRouter([
   // I recommend you reflect the routes here in the pages folder
@@ -68,6 +70,14 @@ const router = createBrowserRouter([
           {
             path: "account",
             element: <Account />,
+          },
+          {
+            path: "/articles/deleted",
+            element: <DeletedArticles />,
+          },
+          {
+            path: "/articles/history", 
+            element: <HistoryData />,
           },
           {
             path: "/articles/edit/:id", // Dynamic route for articles with an ID

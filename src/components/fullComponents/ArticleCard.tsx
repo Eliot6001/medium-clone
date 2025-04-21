@@ -98,25 +98,12 @@ const ArticleCard = ({
                 className="object-cover w-full h-full transition-transform duration-200 transform scale-100 hover:scale-105"
                 src={imageUrl}
                 alt={title}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/placeholder-image.jpg';
-                }}
+                
               />
             </div>
           </div>
         )}
-        {insideProfile && (
-          <div className="flex items-center space-x-4 select-none text-sm text-zinc-500 dark:text-zinc-400 mt-2">
-            <div className="flex items-center space-x-1 hover:underline cursor-pointer">
-              <Eye className="w-4 h-4" />
-              <span>{views} Views</span>
-            </div>
-            <div className="flex items-center space-x-1 hover:underline cursor-pointer">
-              <Heart className="w-4 h-4" />
-              <span>{rating} Likes</span>
-            </div>
-          </div>
-        )}
+        
       </CardContent>
     </Card>
   )
