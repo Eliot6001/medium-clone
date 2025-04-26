@@ -29,7 +29,7 @@ export default function VibrationSphere({isDark= true, disableForwarding = false
     
     // --- SETUP SCENE ---
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(isDark ? "#18181b": "#f4f4f5");
+    scene.background = new THREE.Color(isDark ? "#27272a": "#f4f4f5");
     
     const camera = new THREE.PerspectiveCamera(
       100,

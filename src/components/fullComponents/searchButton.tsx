@@ -15,6 +15,7 @@ import { SearchIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 import { useNavigate } from "react-router-dom"
+import { Button } from "../ui/button"
 
 const FormSchema = z.object({
     searchQuery: z.string().min(2, {
@@ -52,16 +53,16 @@ const SearchButton = ({className}: {className?: string}) => {
                <FormControl>
                <div className={cn("flex align-center items-center transition-all duration-150 ease-in relative", 
                 !isExpanded && "w-4 pl-0" )}>
-                 <button
+                 <Button
                     type="button"
                     onClick={() => setExpanded(!isExpanded)}
                     aria-label={
                       isExpanded ? "Collapse search input" : "Expand search input"
                     }
-                    className="absolute left-1 z-10 p-1 focus:outline-none"
+                    className="absolute left-1 z-10 p-1 focus:outline-none bg-transparent hover:bg-transparent"
                   >
                     <SearchIcon className="h-5 w-5 text-slate-500" />
-                  </button>
+                  </Button>
                 <Input placeholder="Search.." {...field} disabled={!isExpanded} className={cn("pl-8", !isExpanded && "w-0 pl-5 rounded-full")}/>
                 </div>
               </FormControl>

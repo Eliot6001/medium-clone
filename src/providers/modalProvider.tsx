@@ -1,3 +1,4 @@
+import { InterestsPickingModal } from "@/components/modals/signinModal";
 import { useEffect, useState} from "react";
 
 export const ModalProvider = () => {
@@ -15,6 +16,7 @@ export const ModalProvider = () => {
     <>
       {/* <Modal /> */}
       {/* <ModalContainer /> */}
+      <InterestsPickingModal />
     </>
 )
 

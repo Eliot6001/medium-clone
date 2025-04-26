@@ -10,11 +10,31 @@ import { useEffect, useState } from "react";
 import Avatar from "../../Avatar";
 import { cn } from "@/lib/utils";
 import SearchButton from "./searchButton";
+import axios from "axios";
+import { useModal } from "@/hooks/useStoreModal";
 
 const SignedInNavbar = () => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const { session } = useSession();
   const [avatar, setAvatar] = useState<string | null>(null);
   const { loading, avatarUrl } = useProfile();
+  const [showModal, setModal] = useState<boolean>(false);
+  const { onOpen } = useModal()
+
+  useEffect(() => {
+    axios.get(`${backendUrl}/profiles/hasInterests`, {
+      headers: {Authorization: `Bearer ${session?.access_token}`}
+    }).then(res => res.data.data.toUpperCase() === "CHOOSE" ? setModal(true) : setModal(false))
+  }, [session?.user.id])
+  
+  useEffect(() => {
+    if (showModal) {
+      setTimeout(() => {
+        onOpen("interestsModal", { preferred_fields: [], session: {access_token: session?.access_token as string} });
+      }, 0); //small delay to prevent react complaining!
+    }
+  }, [showModal])
 
   useEffect(() => {
     if (avatarUrl) setAvatar(avatarUrl);

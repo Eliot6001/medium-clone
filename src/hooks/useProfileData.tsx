@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 import { useSession } from "../context/SupabaseContext";
 import { useLocalStorage } from './useLocalStorage';
 
+
 export function useProfile() {
 
   const [loading, setLoading] = useState(true);
@@ -42,7 +43,7 @@ export function useProfile() {
           .select(`username, website, avatar_url, ROLE`)
           .eq('id', user.id)
           .single();
-
+      
         if (error && status !== 406) {
           toast({
             variant: 'destructive',
