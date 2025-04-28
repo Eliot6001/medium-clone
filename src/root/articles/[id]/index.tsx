@@ -180,7 +180,7 @@ const Article = () => {
   
     const observer = new IntersectionObserver(observerCallback, { 
       threshold: 0.1, // More sensitive trigger
-      rootMargin: '0px 0px -50% 0px' // Track when element enters middle 50% of viewport
+      rootMargin: '0px 0px 10% 0px' // Track when element enters middle 50% of viewport
     });
 
     markerRefs.current.forEach((marker) => {

@@ -1,43 +1,41 @@
-import SignedInNavbar from '@/components/fullComponents/SignedInNavBar'
-import ArticleCard from '@/components/fullComponents/ArticleCard'
-import SuggestionCard from '@/components/fullComponents/SuggestionCard'
+import SignedInNavbar from "@/components/fullComponents/SignedInNavBar";
+import ArticleCard from "@/components/fullComponents/ArticleCard";
+import SuggestionCard from "@/components/fullComponents/SuggestionCard";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
+import { useSession } from "@/context/SupabaseContext";
+import { usePopularArticles } from "@/hooks/usePopularArticles";
+import LoadingPage from "@/components/LoadingPage";
 
 const Main = () => {
-  const dummyArticles = [
-    {
-      title: "The Art of Modern Development",
-      excerpt: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      author: "John Doe",
-      date: "Oct 15, 2023",
-    },
-    {
-      title: "Understanding TypeScript in 2023",
-      excerpt: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.",
-      author: "Jane Smith",
-      date: "Oct 14, 2023",
-    },
-    {
-      title: "React Best Practices",
-      excerpt: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore.",
-      author: "Mike Johnson",
-      date: "Oct 13, 2023",
-    },
-  ];
-
-  const suggestedArticles = [
-    {
-      title: "Getting Started with Next.js",
-      excerpt: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos.",
-      author: "Sarah Wilson",
-      date: "Oct 12, 2023",
-    },
-    {
-      title: "Web Development Trends",
-      excerpt: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque.",
-      author: "Tom Brown",
-      date: "Oct 11, 2023",
-    },
-  ];
+  const [suggestedArticles, setsuggestedArticles] = useState([]);
+  const { session } = useSession();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const location = useLocation();
+  const { articles: popularArticles, loading: loadingPopular } =
+    usePopularArticles(backendUrl, 30);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const config = session?.access_token
+          ? { headers: { Authorization: `Bearer ${session.access_token}` } }
+          : {};
+  
+        const response = await axios.get(`${backendUrl}/recommendations/`, config);
+  
+        setsuggestedArticles(response.data.suggestions);
+      } catch (error) {
+        console.error("Error fetching recommendations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchSuggestions();
+  }, [backendUrl, location.pathname, session?.access_token]);
 
   return (
     <>
@@ -48,18 +46,43 @@ const Main = () => {
           <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight text-primary">
             Latest Articles
           </h4>
-          {dummyArticles.map((article, index) => (
-            <ArticleCard 
-              key={index}
-              insideProfile={false}
-              className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
-              title={article.title}
-              previewText={article.excerpt}
-              author={article.author}
-              date={article.date}
-              imageUrl={'https://placehold.co/600x400/EEE/31343C'}
-            />
-          ))}
+          {!loading ? (
+            suggestedArticles.map((article, index) => (
+              <ArticleCard
+                key={index}
+                insideProfile={false}
+                articleId={article.postid}
+                className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
+                title={article.title}
+                previewText={
+                  !!article &&
+                  !!article?.content &&
+                  article.content
+                    .replace(/(<([^>]+)>)/gi, "")
+                    .split(" ")
+                    .slice(0, 50)
+                    .join(" ") + "..."
+                }
+                author={article.author}
+                date={article.postedat}
+                imageUrl={"https://placehold.co/600x400/EEE/31343C"}
+              />
+            ))
+          ) : (
+            <div className=" relative ">
+              {" "}
+              <LoadingPage className="top-50 left-50" />{" "}
+            </div>
+          )}
+          {!loading && suggestedArticles.length === 0 && (
+            <span className="w-full dark:border-zinc-700 border-zinc-300 border border-1 p-2 flex rounded-lg">
+              <p className="text-base">
+                There are no more articles,
+                <br />
+                How about getting creative?{" "}
+              </p>{" "}
+            </span>
+          )}
         </div>
 
         {/* Right Column: Related Articles */}
@@ -67,21 +90,28 @@ const Main = () => {
           <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight text-primary">
             Related Articles
           </h4>
-          {suggestedArticles.map((article, index) => (
-            <SuggestionCard 
-              key={index}
-              className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
-              title={article.title}
-              previewText={article.excerpt}
-              author={article.author}
-              date={article.date}
-              imageUrl={'https://placehold.co/600x400/EEE/31343C'}
-            />
-          ))}
+          {!loadingPopular ? (
+            popularArticles.map((article, index) => (
+              <SuggestionCard
+                key={index}
+                postid={article.postid}
+                className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
+                title={article.title}
+                content={article.content}
+                date={new Date(article.postedat).toISOString().split("T")[0]}
+                imageUrl={"https://placehold.co/600x400/EEE/31343C"}
+              />
+            ))
+          ) : (
+            <div className=" relative ">
+              {" "}
+              <LoadingPage className="top-50 left-50" />{" "}
+            </div>
+          )}
         </div>
       </main>
     </>
-  )
-}
+  );
+};
 
-export default Main
+export default Main;

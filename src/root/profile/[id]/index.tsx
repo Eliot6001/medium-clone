@@ -1,108 +1,146 @@
-
 import { useEffect, useState } from 'react';
-import SignedInNavbar from '@/components/fullComponents/SignedInNavBar'
-import ArticleCard from '@/components/fullComponents/ArticleCard'
-import SuggestionCard from '@/components/fullComponents/SuggestionCard'
-import ProfileData from '@/components/fullComponents/profileData'
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import SignedInNavbar from '@/components/fullComponents/SignedInNavBar';
+import ProfileData from '@/components/fullComponents/profileData';
+import ArticleCard from '@/components/fullComponents/ArticleCard';
+import SuggestionCard from '@/components/fullComponents/SuggestionCard';
 import { toast } from '@/components/ui/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../supabaseClient'
+import axios from 'axios';
+import LoadingPage from '@/components/LoadingPage';
+import { usePopularArticles } from '@/hooks/usePopularArticles';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+interface Article {
+  postid: string;
+  title: string;
+  content: string;
+  article_ratings?: { sum: number }[];
+}
+
+interface ProfilePayload {
+  username: string;
+  website: string;
+  avatar_url: string;
+  updated_at: string;
+  posts: Article[];
+}
+
 const Profile = () => {
-  const { id } = useParams(); // Get the id from the URL
-  const navigate = useNavigate(); // For rerouting to 404
-  const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState('');
-  const [website, setWebsite] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [date, setDate] = useState('');
-  const [posts, setPosts] = useState('');
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+ 
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<ProfilePayload | null>(null);
+  const { articles: popularArticles, loading: loadingPopular } = usePopularArticles(backendUrl, 15);
 
   useEffect(() => {
-    async function getProfile() {
+    const fetchProfileAndPosts = async () => {
       try {
         setLoading(true);
-        console.log(id)
-        const { data, error, status } = await supabase
-          .from('user_profiles')
-          .select(`
-          username,
-          website,
-          avatar_url,
-          updated_at,
-          posts (
-            post_id,
-            title,
-            content
-          )
-        `)
-          .eq('id', id) // Use the id from useParams
-          .single();
+        const { data } = await axios.get<ProfilePayload>(
+          `${backendUrl}/profiles/${id}`
+        );
 
-        if (error && status !== 406) {
-          toast({
-            variant: 'destructive',
-            title: 'Failed!',
-            description: 'Failed to retrieve data from db!',
-            duration: 1500,
-          });
-          throw error;
+        if (!data || !data.username) {
+          navigate('/404');
+          return;
         }
 
-        if (!data) {
-          navigate('/404'); // Redirect to 404 if no data is found
-        } else {
-          setUsername(data.username);
-          setWebsite(data.website);
-          setAvatarUrl(data.avatar_url);
-          setDate(data.updated_at);
-          setPosts(data.posts); // Assuming you want to handle the posts as well
-        }
-
+        setProfile(data);
       } catch (error) {
         toast({
           variant: 'destructive',
-          title: 'Failed!',
-          description: `Error: ${error}`,
-          duration: 1500,
+          title: 'Error',
+          description: 'Could not load profile or articles.',
         });
-        console.log(error)
-        // Redirect to 404 if there's an error
+        //navigate('/404');
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    getProfile();
-  }, [id, navigate]); if (loading) return <p>Loading...</p>;
+    fetchProfileAndPosts();
+  }, [id, navigate]);
 
-  console.log(posts)
+  if (loading) return <LoadingPage />;
+  if (!profile) {
+    // just in case
+    return (
+      <>
+        <SignedInNavbar />
+        <p className="p-6 text-center">Profile not found.</p>
+      </>
+    );
+  }
+
   return (
     <>
       <SignedInNavbar />
-      <main className="flex lg:space-x-6 container py-5 lg:flex-row flex-col">
-        <div className="w-11/12 lg:w-3/12">
-          <ProfileData username={username} pfpUrl={avatarUrl} time_joined={date} website={website} />
+      <main className="container mx-auto flex flex-col lg:flex-row gap-6 py-5 bg-white dark:bg-zinc-800">
+        {/* Profile Card */}
+        <div className="w-full lg:w-1/4 space-y-4">
+          <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
+            <ProfileData
+              username={profile.username}
+              pfpUrl={profile.avatar_url}
+              time_joined={profile.updated_at}
+              website={profile.website}
+            />
+          </div>
         </div>
-        <div className="flex-1 lg:py-6 lg:px-12 py-4 lg:space-y-5 space-y-3 w-11/12">
-          <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
-            Latest Articles
-          </h4>
-          {posts && posts?.map(post => 
-          <ArticleCard title={post.title} previewText={post.content.substring(0, 100)} insideProfile />)}
+
+        {/* Latest Articles */}
+        <div className="flex-1">
+          <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
+            <h4 className="mb-4 text-xl font-semibold tracking-tight text-primary dark:text-zinc-200 border-b border-gray-300 dark:border-zinc-600 pb-2">
+              Latest Articles
+            </h4>
+            <div className="space-y-4">
+              {profile.posts.length > 0 ? (
+                profile.posts.map((post) => (
+                  <ArticleCard
+                    key={post.postid}
+                    title={post.title}
+                    previewText={post.content.slice(0, 100) + '...'}
+                    articleId={post.postid}
+                    rating={post.article_ratings?.[0]?.sum}
+                    className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
+                    insideProfile
+                  />
+                ))
+              ) : (
+                <p className="text-zinc-800 dark:text-zinc-200">
+                  No articles found.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="w-11/12 lg:w-3/12 py-4 lg:space-y-5 space-y-3 ">
-          <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
-            Related Articles
-          </h4>
-          <SuggestionCard />
+
+        {/* Related Articles */}
+        <div className="w-full lg:w-1/4">
+          <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
+            <h4 className="mb-4 text-xl font-semibold tracking-tight text-primary dark:text-zinc-200 border-b border-gray-300 dark:border-zinc-600 pb-2">
+              Popular Articles
+            </h4>
+            {!loadingPopular ? popularArticles.map((article, index) => (
+            <SuggestionCard 
+              key={index}
+              postid={article.postid}
+              className="bg-zinc-100 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
+              title={article.title}
+              content={article.content}
+              date={new Date(article.postedat).toISOString().split('T')[0]}
+              imageUrl={'https://placehold.co/600x400/EEE/31343C'}
+            />
+          )) : <div className=" relative "> <LoadingPage className="top-50 left-50"/> </div> }
+          </div>
         </div>
       </main>
     </>
-  )
-}
+  );
+};
 
-export default Profile  
+
+export default Profile;
