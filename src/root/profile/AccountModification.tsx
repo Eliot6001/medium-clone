@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react'
-import { supabase } from './supabaseClient'
+import { supabase } from '../../supabaseClient'
 import Nav from '@/components/fullComponents/Nav'
-import Avatar from './Avatar'
-import { Button } from './components/ui/button'
-import { useSession } from "./context/SupabaseContext";
+import Avatar from '../../Avatar'
+import { Button } from '../../components/ui/button'
+import { useSession } from "../../context/SupabaseContext";
 import { Input } from '@/components/ui/input'
 import { useToast } from "@/components/ui/use-toast"
-import useProfile from './hooks/useProfileData'
+import useProfile from '../../hooks/useProfileData'
 import {Info} from 'lucide-react'
+import { Toast } from '@radix-ui/react-toast'
+import axios from 'axios'
 
 export default function Account() {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState('')
   const [website, setWebsite] = useState('')
@@ -22,41 +26,52 @@ export default function Account() {
 
   useEffect(() => {
     setLoading(isFetching);
-
     if (fetchedUserName) setUsername(fetchedUserName)
     if (fetchedWebsite) setWebsite(fetchedWebsite)
     if (fetchedavatarUrl) setAvatarUrl(fetchedavatarUrl)
 
   }, [isFetching, fetchedUserName, fetchedWebsite, fetchedavatarUrl])
 
-  async function updateProfile(event, avatarUrl) {
-    event.preventDefault()
+  async function updateProfile(event: Event, avatarUrl:string) {
+    event.preventDefault();
+    setLoading(true);
+    if(!session) return toast({
+      variant: "destructive",
+      title: "Update failed",
+      description: `Try logging in again!`,
+      duration: 1500,
+    });
 
-    setLoading(true)
-    const { user } = session
-
-    const updates = {
-      id: user.id,
-      username,
-      website,
-      avatar_url: avatarUrl,
-      updated_at: new Date(),
-    }
-
-    const { error } = await supabase.from('user_profiles').upsert(updates)
-
-    if (error) {
+    const { user, access_token } = session;
+    try {
+      await axios.patch(`${backendUrl}/profiles/${user.id}`, {
+        username,
+        website,
+        avatar_url: avatarUrl,
+      }, {
+        headers: {
+          Authorization: `Bearer ${access_token}`
+        }
+      });
+  
+      setAvatarUrl(avatarUrl);
+  
       toast({
-        variant: 'destructive',
-        title: 'Failed!',
-        description: `Error : ${error}`,
-        duration: 1500
-      })
-      throw error
-    } else {
-      setAvatarUrl(avatarUrl)
+        title: "Success!",
+        description: "Profile updated successfully.",
+        duration: 1500,
+      });
+  
+    } catch (error: string) {
+      toast({
+        variant: "destructive",
+        title: "Update failed",
+        description: `Error: ${error.response?.data?.error || error.message}`,
+        duration: 1500,
+      });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false)
   }
 
   return (
@@ -76,7 +91,7 @@ export default function Account() {
             <Input
               id="email"
               type="text"
-              value={session.user.email}
+              value={session?.user.email}
               disabled
               className="bg-gray-200 dark:bg-zinc-900"
             />
@@ -107,7 +122,7 @@ export default function Account() {
 
           <div className="flex justify-end divide-x-5 gap-2">
             <div>
-              <Button variant={"primary"} className=" bg-sky-400 hover:bg-sky-500 text-black py-2 px-4 rounded shadow-md hover:shadow-lg transition duration-300 " type="submit" disabled={loading}>
+              <Button variant={"default"} className=" bg-sky-400 hover:bg-sky-500 text-black py-2 px-4 rounded shadow-md hover:shadow-lg transition duration-300 " type="submit" disabled={loading}>
                 {loading ? 'Loading ...' : 'Update'}
               </Button>
             </div>

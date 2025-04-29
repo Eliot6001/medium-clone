@@ -6,7 +6,7 @@ import NotFoundPage from "../pages/Error404Page";
 import LoggingOutWindow from "../pages/Logout";
 import AuthProtectedRoute from "./AuthProtectedRoute";
 import Providers from "../providers/Provider";
-import Account from '../Account'
+import Account from '../root/profile/AccountModification'
 import Profile from '../root/profile/Profile'
 import Reset from '../reset'
 import Main from "@/root/main";

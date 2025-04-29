@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient';
 import { useToast } from "@/components/ui/use-toast"
 import { cn } from './lib/utils'
 import { useLocalStorage } from './hooks/useLocalStorage';
-
+import useProfile from './hooks/useProfileData';
 // Improved typings
 interface AvatarProps {
   url: string | null;
@@ -40,7 +40,7 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
   // Single source of truth for the avatar display URL
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  
+  const {clearCache} = useProfile();
   // Keep track of blob URLs to clean up
   const blobUrlsRef = useRef<string[]>([]);
   
@@ -89,7 +89,7 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
         if (blobUrl) {
           blobUrlsRef.current.push(blobUrl);
           setAvatarUrl(blobUrl);
-          
+          clearCache();
           toast({
             variant: 'success',
             description: "Profile image updated successfully",

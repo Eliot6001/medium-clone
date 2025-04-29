@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
@@ -9,9 +9,18 @@ interface Article {
   [key: string]: any;
 }
 
+interface CacheEntry {
+  data: Article[];
+  expiry: number;
+}
+
+const cache = new Map<string, CacheEntry>();
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+
 /**
  * Fetches “popular” articles on mount or when the route changes,
- * strips HTML, truncates to `wordLimit` words, and returns them.
+ * strips HTML, truncates to `wordLimit` words, and returns them,
+ * utilizing an in-memory cache for 30 minutes.
  */
 export function usePopularArticles(
   backendUrl: string,
@@ -21,12 +30,25 @@ export function usePopularArticles(
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const cacheKey = `${backendUrl}/articles/popular?limit=${wordLimit}`; // Unique key based on URL and wordLimit
 
   useEffect(() => {
     let cancelled = false;
+
     const fetchPopular = async () => {
       setLoading(true);
       setError(null);
+
+      // Check cache first
+      const cachedData = cache.get(cacheKey);
+      if (cachedData && Date.now() < cachedData.expiry) {
+        if (!cancelled) {
+          setArticles(cachedData.data);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const { data } = await axios.get<Article[]>(
           `${backendUrl}/articles/popular`
@@ -41,8 +63,12 @@ export function usePopularArticles(
             .join(' ');
           return { ...article, content: text + '...' };
         });
-     
-        setArticles(trimmed);
+
+        if (!cancelled) {
+          setArticles(trimmed);
+          // Update the cache
+          cache.set(cacheKey, { data: trimmed, expiry: Date.now() + CACHE_DURATION });
+        }
       } catch (err: any) {
         if (!cancelled) setError(err.message || 'Failed to fetch articles');
       } finally {
@@ -54,8 +80,7 @@ export function usePopularArticles(
     return () => {
       cancelled = true;
     };
-    
-  }, [backendUrl, location.pathname, wordLimit]);
+  }, [backendUrl, location.pathname, wordLimit, cacheKey]); // Include cacheKey in dependency array
 
   return { articles, loading, error };
 }
