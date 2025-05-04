@@ -105,7 +105,7 @@ const Profile = () => {
                   <ArticleCard
                     key={post.postid}
                     title={post.title}
-                    previewText={post.content.slice(0, 100) + '...'}
+                    previewText={post.content.replace(/<[^>]*>/g, "").substring(0, 100)}              articleId={post.postid}
                     articleId={post.postid}
                     rating={post.article_ratings?.[0]?.sum as number}
                     className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
@@ -135,7 +135,6 @@ const Profile = () => {
               title={article.title}
               content={article.content}
               date={new Date(article.postedat as string).toISOString().split('T')[0]}
-              //@ts-ignore
               imageUrl={'https://placehold.co/600x400/EEE/31343C' as string}
             />
           )) : <div className=" relative "> <LoadingPage className="top-50 left-50"/> </div> }

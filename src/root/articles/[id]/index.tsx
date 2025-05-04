@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Nav from "@/components/fullComponents/Nav";
 import "../../../components/editor/styles.scss";
@@ -12,6 +12,8 @@ import DeleteWarning from "@/components/modals/alertModal";
 import LoadingPage from "@/components/LoadingPage";
 import useProfile from "@/hooks/useProfileData";
 import { cn } from "@/lib/utils";
+import ProfileData from "@/components/fullComponents/profileData";
+import Avatar from "@/Avatar";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -263,6 +265,12 @@ const Article = () => {
         {article && (
           <>
             <div className="bg-white dark:bg-zinc-800 lg:p-8 p-6 rounded-lg shadow-lg border dark:border-zinc-700 transition-colors duration-150 space-y-6">
+             <Link   className="flex items-center space-x-4 bg-gray-50 dark:bg-zinc-700 p-4 rounded-md shadow-sm hover:bg-gray-100 dark:hover:bg-zinc-600 transition-colors"
+              to={`/profile/${article.userid}`}>
+             <Avatar size={28} url={article.user_profiles?.avatar_url} onPublicRoute/>
+             <p className="text-normal text-gray-500 dark:text-zinc-400">Posted by</p>
+             <p className="text-lg font-medium text-gray-900 dark:text-zinc-100">{article.user_profiles?.username || "Unknown"}</p>
+             </Link>
               <span className="flex items-center justify-between">
                 <h1 className="text-3xl font-extrabold text-primary dark:text-zinc-200">
                   {article.title}

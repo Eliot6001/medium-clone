@@ -1,7 +1,14 @@
 import { Link } from "react-router-dom";
 import Logo from "@/components/logo";
 import { ModeToggle } from "@/components/mode-toggle";
-import { UserCircle, Bell, PenSquare, MenuIcon, LogOut } from "lucide-react";
+import {
+  UserCircle,
+  Bell,
+  PenSquare,
+  MenuIcon,
+  LogOut,
+  Globe,
+} from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/context/SupabaseContext";
@@ -20,21 +27,30 @@ const SignedInNavbar = () => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const { loading, avatarUrl } = useProfile(session?.access_token);
   const [showModal, setModal] = useState<boolean>(false);
-  const { onOpen } = useModal()
+  const { onOpen } = useModal();
 
   useEffect(() => {
-    axios.get(`${backendUrl}/profiles/hasInterests`, {
-      headers: {Authorization: `Bearer ${session?.access_token}`}
-    }).then(res => res.data.data.toUpperCase() === "CHOOSE" ? setModal(true) : setModal(false))
-  }, [session?.user.id])
-  
+    axios
+      .get(`${backendUrl}/profiles/hasInterests`, {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      })
+      .then((res) =>
+        res.data.data.toUpperCase() === "CHOOSE"
+          ? setModal(true)
+          : setModal(false)
+      );
+  }, [session?.user.id]);
+
   useEffect(() => {
     if (showModal) {
       setTimeout(() => {
-        onOpen("interestsModal", { preferred_fields: [], session: {access_token: session?.access_token as string} });
+        onOpen("interestsModal", {
+          preferred_fields: [],
+          session: { access_token: session?.access_token as string },
+        });
       }, 0); //small delay to prevent react complaining!
     }
-  }, [showModal])
+  }, [showModal]);
 
   useEffect(() => {
     if (avatarUrl) setAvatar(avatarUrl);
@@ -56,23 +72,31 @@ const SignedInNavbar = () => {
         </SheetTrigger>
         <SheetContent
           side="left"
-          className="flex h-screen w-20 flex-col px-4 py-6 gap-6"
+          className="flex h-screen w-24 flex-col px-4 py-6 gap-6"
         >
           <Link to="/main" className="flex items-center justify-center">
             <Logo className="w-8 h-6" />
             <span className="sr-only">Thread</span>
           </Link>
           <div className="flex flex-col items-center gap-6">
-          <Link
-            to="/write"
-            className="a-primary group inline-flex items-center overflow-hidden transition-all duration-300"
-            aria-label="Write"
-          >
-            <PenSquare className="h-5 w-5" />
-            <span className="ml-2 max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 group-hover:max-w-[4rem] group-hover:opacity-100 opacity-0">
-              Write
-            </span>
-          </Link>
+            <Link
+              to="/write"
+              className="a-primary group inline-flex items-center overflow-hidden transition-all duration-300"
+              aria-label="Write"
+            >
+              <PenSquare className="h-5 w-5" />
+              <span className="ml-2 max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 group-hover:max-w-[4rem] group-hover:opacity-100 opacity-0">
+                Write
+              </span>
+            </Link>
+            <Link
+              to="/explore"
+              className="a-primary group inline-flex items-center overflow-hidden transition-all duration-300"
+            >
+              <Globe className="h-5 w-5" />
+              <span className="ml-2 max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 group-hover:max-w-[4rem] group-hover:opacity-100 opacity-0">
+                Explore</span>
+            </Link>
             <Link
               to="/notifications"
               className="a-primary flex flex-col items-center"
@@ -126,6 +150,15 @@ const SignedInNavbar = () => {
               Write
             </span>
           </Link>
+          <Link
+              to="/explore"
+              className="a-primary group inline-flex items-center overflow-hidden transition-all duration-300"
+              aria-label="Explore"
+            >
+              <Globe className="h-5 w-5" />
+              <span className="ml-2 max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 group-hover:max-w-[4rem] group-hover:opacity-100 opacity-0">
+              Explore</span>
+            </Link>
           <Link
             to="/notifications"
             className="a-primary"

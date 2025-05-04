@@ -17,6 +17,7 @@ import Article from "@/root/articles/[id]";
 import Userprofile from "@/root/profile/[id]";
 import Search from "@/root/search/[query]";
 import HistoryData from "@/root/articles/history";
+import Explore from "@/root/explore";
 
 const router = createBrowserRouter([
   // I recommend you reflect the routes here in the pages folder
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       }, {
         path: "/signup",
         element: <SignUpPage />,
+      },
+      {
+        path:'/explore',
+        element: <Explore />
       },
       {
         path: "/account/update-password",

@@ -12,7 +12,7 @@ import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog"
 import { Button } from "@/components/ui/button"
 import axios from "axios"
 
-import { Toast } from "../ui/toast"
+import { toast } from "@/components/ui/use-toast";
 
 // your categorization fields
 const FIELDS = [
@@ -39,7 +39,7 @@ export const InterestsPickingModal: React.FC = () => {
 
   const handleSave = async () => {
     console.log("User picked interests:", session)
-    const { data } = await axios.post(`${backendUrl}/profiles/hasInterests`,
+    const data = await axios.post(`${backendUrl}/profiles/hasInterests`,
       { selected: [...selected] }, // <- this is the body
       {
         headers: {
@@ -47,14 +47,14 @@ export const InterestsPickingModal: React.FC = () => {
         }
       });
   
-    if (data) {
-      Toast({
+    if (data?.data["success"] === true) {
+      toast({
         variant: 'success',
-        value: "Successfully updated your interests!"
+        description: "Successfully updated your interests!"
       });
-        
+      onClose()
     }
-    onClose()
+    
   }
   
 

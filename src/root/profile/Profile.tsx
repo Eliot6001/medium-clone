@@ -83,10 +83,10 @@ const Profile = () => {
             <ArticleCard 
               key={post.postid} 
               title={post.title} 
-              previewText={post.content.substring(0, 100)}
-              articleId={post.postid}
+              previewText={post.content.replace(/<[^>]*>/g, "").substring(0, 100)}              articleId={post.postid}
               rating={post?.article_ratings?.[0]?.sum as number}
               className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
+              insideProfile
             />
           ))
         ) : (

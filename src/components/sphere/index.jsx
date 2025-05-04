@@ -1,15 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import FIELDS from '@/components/fields'
 
 export default function VibrationSphere({isDark= true, disableForwarding = false}) {
 
   const mountRef = useRef(null);
-  const [fields] = useState([
-    'Technology', 'Culture', 'Science', 'History', 'Geography',
-    'Politics', 'Economics', 'Mathematics', 'Literature',
-    'Performing Arts', 'Visual Arts', 'Health & Wellness', 'Sports',
-    'Business & Finance', 'Environment'
-  ]);
+  const fields = FIELDS
   
   const sphereRef = useRef();
   const labelsRef = useRef([]);
@@ -197,7 +193,7 @@ export default function VibrationSphere({isDark= true, disableForwarding = false
       if (intersects.length > 0) {
         const field = intersects[0].object.userData.field;
         if(!disableForwarding)
-          window.location.href = `/search?field=${field}`;
+          window.location.href = `/explore?field=${field}`;
         else {
           console.log("You selected", field)
         }

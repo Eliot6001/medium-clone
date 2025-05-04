@@ -1,7 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardContent } from "../ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar as AvatarWrapper } from "@/components/ui/avatar";
+
+import Avatar from "@/Avatar";
 import { format } from "date-fns";
 import { Clock, Heart, Eye } from "lucide-react";
 
@@ -10,10 +13,11 @@ interface ArticleCardProps {
   className?: string;
   authorName?: string;
   authorImage?: string;
+  authorId?: string;
   title: string;
   previewText: string;
   imageUrl?: string;
-  articleId: string;
+  articleId?: string;
   rating: number;
   publishedAt?: Date;
   views?: number;
@@ -23,10 +27,11 @@ const ArticleCard = ({
   insideProfile = false,
   className = "",
   authorName = "Anonymous",
-  authorImage = "",
+  authorImage = "default.webp",
+  authorId = '',
   title,
   previewText,
-  imageUrl = "/placeholder-image.jpg",
+  imageUrl = "",
   articleId,
   rating = 0,
   publishedAt,
@@ -38,35 +43,30 @@ const ArticleCard = ({
     navigate(`/articles/${articleId}`);
   };
 
-  const formattedDate =
-    publishedAt instanceof Date
-      ? format(publishedAt, "HH:mm • MM/dd/yyyy")
-      : "";
+  const formattedDate = publishedAt && 
+     format(publishedAt, "HH:mm • MM/dd/yyyy")
+      || "";
 
   return (
     <Card
       className={cn(
         "shadow-md dark:shadow-zinc-800 shadow-zinc-300 rounded-lg overflow-hidden",
         "w-full",
-        "cursor-pointer transition-transform hover:scale-[1.01] duration-200",
+        "cursor-pointer transition-transform hover:scale-[1.01] duration-200 z-10",
         className
       )}
+
       onClick={handleCardClick}
     >
-      {insideProfile && (
+      {!insideProfile && (
         <CardHeader className="px-4 py-3 border-b dark:border-zinc-800">
-          <div className="flex flex-row space-x-3 items-center">
-            <Avatar className="w-8 h-8 flex-shrink-0">
-              <AvatarImage src={authorImage} alt={authorName} />
-              <AvatarFallback>
-                {authorName?.[0]?.toUpperCase() ?? "A"}
-              </AvatarFallback>
-            </Avatar>
+          <div className="">
+          <Link to={`/profile/${authorId}`} className="flex flex-row space-x-3 items-center z-20">
+            <Avatar url={authorImage as string} size={28} onPublicRoute />
             <div className="flex flex-col text-xs sm:text-sm overflow-hidden">
               <p className="font-medium text-zinc-700 dark:text-zinc-200 truncate">
-                {authorName}
+                {authorName ? authorName : "No Username."}
               </p>
-
               {formattedDate && (
                 <p className="dark:text-zinc-400 text-zinc-500 text-xs flex items-center space-x-1 mt-0.5">
                   <Clock className="w-3 h-3 flex-shrink-0" />
@@ -74,6 +74,7 @@ const ArticleCard = ({
                 </p>
               )}
             </div>
+          </Link>
           </div>
         </CardHeader>
       )}
@@ -123,18 +124,7 @@ const ArticleCard = ({
           </div>
         </div>
 
-        {insideProfile && (
-          <div className="relative w-full md:w-1/3 h-32 md:h-40 rounded-md overflow-hidden shadow-sm flex-shrink-0">
-            {" "}
-            {/* Adjusted md height, ensure shrink */}
-            <img
-              className="absolute inset-0 object-cover w-full h-full transition-transform duration-200 transform hover:scale-105"
-              src={imageUrl}
-              alt={title}
-              loading="lazy"
-            />
-          </div>
-        )}
+        
       </CardContent>
     </Card>
   );

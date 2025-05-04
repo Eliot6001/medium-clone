@@ -25,8 +25,8 @@ const Main = () => {
           : {};
   
         const response = await axios.get(`${backendUrl}/recommendations/`, config);
-  
-        setsuggestedArticles(response.data.suggestions);
+      
+        setsuggestedArticles(response.data.suggestions.flat());
       } catch (error) {
         console.error("Error fetching recommendations:", error);
       } finally {
@@ -69,9 +69,11 @@ const Main = () => {
                   .join(" ") + "..."
                 : ""
               }
-              //@ts-ignore
-              author={article.author}
-              date={article.postedat}
+              authorName={article?.user_profiles.username}
+              authorImage={article?.user_profiles.avatar_url}
+              authorId={article?.user_profiles.id}
+              rating={article.rating_score}
+              publishedAt={article.created_at}
               imageUrl={"https://placehold.co/600x400/EEE/31343C"}
               />
             ))

@@ -19,13 +19,6 @@ interface Article {
   author?: string;
 }
 
-const extractExcerpt = (htmlContent: string, length: number = 100): string => {
-  // Create a temporary DOM element to leverage the browser's HTML parser.
-  const tempDiv = document.createElement("div");
-  tempDiv.innerHTML = htmlContent;
-  const text = tempDiv.textContent || tempDiv.innerText || "";
-  return text.length > length ? text.substring(0, length) + "..." : text;
-};
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -36,10 +29,10 @@ const Search = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       setLoading(true);
-        const { data, error } = await supabase
-        .from('posts')
-        .select('title, content, postid, userid, created_at')
-        .textSearch('fts', query, { type: 'websearch' }); 
+      const { data, error } = await supabase.rpc('search_posts_with_user_profile', {
+        query: query
+      });
+    
     
       if (error) {
         console.error('Error searching posts:', error);
@@ -62,8 +55,8 @@ const Search = () => {
           <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
               Found Articles
             </h4>
-          {articles.map((article, index) => {
-          const excerpt = extractExcerpt(article.content, 100);
+          {articles.map((article: Article, index) => {
+          
           return (
             <ArticleCard
               key={article.postid || index}
@@ -71,11 +64,16 @@ const Search = () => {
               insideProfile={false}
               className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all "
               title={article.title}
-              previewText={excerpt}
-              author={article.author || "Unknown"}
-              date={new Date(article.created_at).toLocaleDateString()}
+              previewText={article.content.replace(/<[^>]*>/g, "").substring(0, 100)}
+              authorName={article?.username }
+              authorImage={article?.avatar_url || "default.webp"}
+              authorId={article.userid}
               imageUrl={"https://placehold.co/600x400/EEE/31343C"}
+              publishedAt={new Date(article.created_at).toLocaleDateString()}
+              rating={article.rating || 0}
+              views={article.views || 0}
             />
+
           );
         })}
         
