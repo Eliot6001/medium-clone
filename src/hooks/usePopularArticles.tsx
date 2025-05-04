@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
@@ -6,7 +6,7 @@ interface Article {
   postid: string;
   title: string;
   content: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface CacheEntry {
@@ -69,8 +69,12 @@ export function usePopularArticles(
           // Update the cache
           cache.set(cacheKey, { data: trimmed, expiry: Date.now() + CACHE_DURATION });
         }
-      } catch (err: any) {
-        if (!cancelled) setError(err.message || 'Failed to fetch articles');
+      } catch (err: unknown) {
+        let message = 'Failed to fetch articles';
+        if (err instanceof Error) {
+          message = err.message;
+        }
+        if (!cancelled) setError(message);
       } finally {
         if (!cancelled) setLoading(false);
       }

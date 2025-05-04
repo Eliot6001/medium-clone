@@ -3,7 +3,7 @@
 import { useTheme } from "@/components/theme-provider";
 import {cn} from '@/lib/utils'
 
-const Logo = ({ className }) => {
+const Logo: React.ComponentType<React.SVGProps<SVGSVGElement> & { className?: string }> = ({ className }) => {
   const { theme } = useTheme();
   return (
     <>

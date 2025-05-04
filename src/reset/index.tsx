@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import TopNavbar from '@/components/fullComponents/DefaultNavbar'
 import { supabase } from '../supabaseClient'
 import {
@@ -55,7 +55,7 @@ const Reset = () => {
       if (error) {
         toast({
           variant: 'destructive',
-          description: error.error_description || error.message,
+          description: error.message,
         })
       } else {
         toast({

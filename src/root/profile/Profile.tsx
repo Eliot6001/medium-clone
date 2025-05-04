@@ -21,7 +21,7 @@ const Profile = () => {
   const {session} = useSession();
   const [posts, setPosts] = useState<Article[]>([]);
   const [_, setFetching] = useState(true);
-  const { loading, username, website, avatarUrl, createdAt } = useProfile();
+  const { loading, username, website, avatarUrl, createdAt } = useProfile(session?.access_token);
   const { articles: popularArticles, loading: loadingPopular } = usePopularArticles(backendUrl, 15);
 
   useEffect(() => {
@@ -56,10 +56,11 @@ const Profile = () => {
   <div className="w-full lg:w-1/4 space-y-4">
     <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
       <ProfileData 
-        username={username} 
-        pfpUrl={avatarUrl} 
-        time_joined={createdAt} 
-        website={website} 
+        username={username ?? ''} 
+        pfpUrl={avatarUrl ?? undefined} 
+        time_joined={createdAt ?? ''} 
+        website={website ?? undefined} 
+        personal={true}
       />
   
     </div>
@@ -84,7 +85,7 @@ const Profile = () => {
               title={post.title} 
               previewText={post.content.substring(0, 100)}
               articleId={post.postid}
-              rating={post?.article_ratings?.[0]?.sum}
+              rating={post?.article_ratings?.[0]?.sum as number}
               className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
             />
           ))
@@ -108,9 +109,9 @@ const Profile = () => {
               className="bg-zinc-100 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 transition-all duration-150"
               title={article.title}
               content={article.content}
-              ratings={article.interaction_count}
+              ratings={article.interaction_count as number}
               date={new Date(article.postedat).toISOString().split('T')[0]}
-              imageUrl={'https://placehold.co/600x400/EEE/31343C'}
+              imageUrl={'https://placehold.co/600x400/EEE/31343C' as string}
             />
           )) : <div className=" relative "> <LoadingPage className="top-50 left-50"/> </div> }
     </div>
@@ -128,10 +129,12 @@ interface Article {
   userid: string;
   content: string;
   rating?: number; 
+  imageUrl ?:string;
   updated_at: Date;
   created_at: Date;
   deleted: boolean;
   deleted_at: Date;
+  article_ratings?: { sum: number }[];
 }
 
 export default Profile;

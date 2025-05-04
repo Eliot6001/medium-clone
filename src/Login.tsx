@@ -86,7 +86,7 @@ export default function Auth() {
           title: "Success",
           description: `Welcome ${data.email}`,
         })
-        navigate('/home')
+        navigate('/main')
       }
       setLoading(false)
     }

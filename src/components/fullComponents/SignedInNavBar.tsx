@@ -18,7 +18,7 @@ const SignedInNavbar = () => {
 
   const { session } = useSession();
   const [avatar, setAvatar] = useState<string | null>(null);
-  const { loading, avatarUrl } = useProfile();
+  const { loading, avatarUrl } = useProfile(session?.access_token);
   const [showModal, setModal] = useState<boolean>(false);
   const { onOpen } = useModal()
 

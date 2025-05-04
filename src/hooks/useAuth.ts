@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient'; // Adjust the path according to your setup
 
+import type { Session } from '@supabase/supabase-js';
+
 const useAuthSession = () => {
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [current, setCurrent] = useState('main');
 
-  const onClick = (e) => {
+  interface OnClickEvent {
+    key: string;
+    [key: string]: unknown;
+  }
+
+  const onClick = (e: OnClickEvent): void => {
     console.log('click ', e);
     setCurrent(e.key);
   };
@@ -23,7 +30,7 @@ const useAuthSession = () => {
 
     // Cleanup the listener on unmount
     return () => {
-      authListener?.unsubscribe();
+      authListener?.subscription.unsubscribe();
     };
   }, []);
 

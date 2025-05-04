@@ -10,13 +10,22 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 //This does the work a little,
 //Might wanna expand! 
-const extractExcerpt = (htmlContent, length = 100) => {
-    // Create a temporary DOM element to leverage the browser's HTML parser.
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = htmlContent;
-    const text = tempDiv.textContent || tempDiv.innerText || "";
-    return text.length > length ? text.substring(0, length) + "..." : text;
-  };
+interface Article {
+  title: string;
+  content: string;
+  postid: string;
+  userid: string;
+  created_at: string;
+  author?: string;
+}
+
+const extractExcerpt = (htmlContent: string, length: number = 100): string => {
+  // Create a temporary DOM element to leverage the browser's HTML parser.
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = htmlContent;
+  const text = tempDiv.textContent || tempDiv.innerText || "";
+  return text.length > length ? text.substring(0, length) + "..." : text;
+};
 
 const Search = () => {
   const [searchParams] = useSearchParams();

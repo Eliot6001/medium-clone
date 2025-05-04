@@ -13,13 +13,6 @@ interface ModalStore {
 }
 
 interface ModalData {
-  server?: Server;
-  channel?: Channel;
-  channelType?: ChannelType;
-  apiUrl?: string;
-  query?: Record<string, any>;
-  friends?: Profile[]; 
-  members?: (Member & {profile: Profile})[];
   preferred_fields?: string[];
   session?: {
     access_token: string;

@@ -1,11 +1,17 @@
+import { Session } from '@supabase/supabase-js';
 import { Navigate } from 'react-router-dom'
 
-const ProtectedRoute = ({ session, children }) => {
+interface ProtectedRouteProps {
+  session: Session; 
+  children: React.ReactNode;
+}
+
+const ProtectedRoute = ({ session, children }: ProtectedRouteProps) => {
   if (!session) {
     return <Navigate to="/login" replace />
   }
 
-  return children
+  return <>{children}</>;
 }
 
 export default ProtectedRoute

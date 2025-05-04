@@ -48,7 +48,9 @@ const Profile = () => {
         }
 
         setProfile(data);
-      } catch (error) {
+        
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_error) {
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -86,6 +88,7 @@ const Profile = () => {
               pfpUrl={profile.avatar_url}
               time_joined={profile.updated_at}
               website={profile.website}
+              personal={false}
             />
           </div>
         </div>
@@ -104,7 +107,7 @@ const Profile = () => {
                     title={post.title}
                     previewText={post.content.slice(0, 100) + '...'}
                     articleId={post.postid}
-                    rating={post.article_ratings?.[0]?.sum}
+                    rating={post.article_ratings?.[0]?.sum as number}
                     className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
                     insideProfile
                   />
@@ -131,8 +134,9 @@ const Profile = () => {
               className="bg-zinc-100 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
               title={article.title}
               content={article.content}
-              date={new Date(article.postedat).toISOString().split('T')[0]}
-              imageUrl={'https://placehold.co/600x400/EEE/31343C'}
+              date={new Date(article.postedat as string).toISOString().split('T')[0]}
+              //@ts-ignore
+              imageUrl={'https://placehold.co/600x400/EEE/31343C' as string}
             />
           )) : <div className=" relative "> <LoadingPage className="top-50 left-50"/> </div> }
           </div>

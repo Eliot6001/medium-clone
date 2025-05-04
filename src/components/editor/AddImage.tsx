@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Editor } from "@tiptap/react";
 import { useUploadThing } from "../uploadthing"; // Make sure this hook is properly configured
 import "./styles.scss";
@@ -121,25 +121,20 @@ const AddImage = ({ editor, setUploadingImage }: AddImageProps) => {
   useEffect(() => {
     if (editor) {
       const editorElement = document.querySelector(".ProseMirror");
+      // Helper to convert React drag event handlers to native event listeners
+      const dropListener = (e: Event) => handleDrop(e as unknown as React.DragEvent<HTMLDivElement>);
+      const dragOverListener = (e: Event) => handleDragOver(e as unknown as React.DragEvent<HTMLDivElement>);
+      const dragLeaveListener = (e: Event) => handleDragLeave(e as unknown as React.DragEvent<HTMLDivElement>);
       if (editorElement) {
-        editorElement.addEventListener("drop", handleDrop as DragEventListener);
-        editorElement.addEventListener(
-          "dragover",
-          handleDragOver as DragEventListener
-        );
-        editorElement.addEventListener(
-          "dragleave",
-          handleDragLeave as DragEventListener
-        );
+        editorElement.addEventListener("drop", dropListener as EventListener);
+        editorElement.addEventListener("dragover", dragOverListener as EventListener);
+        editorElement.addEventListener("dragleave", dragLeaveListener as EventListener);
       }
       return () => {
         if (editorElement) {
-          editorElement.removeEventListener("drop", handleDrop as any);
-          editorElement.removeEventListener("dragover", handleDragOver as any);
-          editorElement.removeEventListener(
-            "dragleave",
-            handleDragLeave as any
-          );
+          editorElement.removeEventListener("drop", dropListener as EventListener);
+          editorElement.removeEventListener("dragover", dragOverListener as EventListener);
+          editorElement.removeEventListener("dragleave", dragLeaveListener as EventListener);
         }
       };
     }

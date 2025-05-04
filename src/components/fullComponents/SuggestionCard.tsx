@@ -10,9 +10,10 @@ interface ArticleCardProps {
   postid: string;
   ratings: number;
   date: string;
+  imageUrl?: string;
 }
 
-const ArticleCard = ({ className = "", authorName = "", title = "", content = "", postid = "404", ratings = 0, date = 'not given' }: ArticleCardProps) => {
+const ArticleCard = ({ className = "",imageUrl ="", authorName = "", title = "", content = "", postid = "404", ratings = 0, date = 'not given' }: ArticleCardProps) => {
   const navigate = useNavigate();
   return (
     <Card onClick={() => navigate(`/articles/${postid}`)} className={cn("w-full shadow dark:shadow-zinc-800 shadow-zinc-300 cursor-pointer space-y-2 py-2", className)}>

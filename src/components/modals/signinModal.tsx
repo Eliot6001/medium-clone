@@ -11,7 +11,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog"
 import { Button } from "@/components/ui/button"
 import axios from "axios"
-import { useSession } from "@/context/SupabaseContext"
 
 import { Toast } from "../ui/toast"
 
@@ -53,8 +52,9 @@ export const InterestsPickingModal: React.FC = () => {
         variant: 'success',
         value: "Successfully updated your interests!"
       });
-      onClose(); 
+        
     }
+    onClose()
   }
   
 

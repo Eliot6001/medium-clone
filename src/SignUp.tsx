@@ -18,7 +18,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "./context/SupabaseContext";
 
 export default function SignUp() {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const frontendUrl = import.meta.env.VITE_FRONTEND_URL;
   const [loading, setLoading] = useState(false)
   const { session } = useSession();
   const [email, setEmail] = useState('')
@@ -62,7 +62,7 @@ export default function SignUp() {
         email,
         password,
         options:{
-          emailRedirectTo:`${backendUrl}/auth/confirm`
+          emailRedirectTo:`${frontendUrl}`
         }
       })
 
@@ -77,7 +77,6 @@ export default function SignUp() {
           title: "Success",
           description: `Welcome ${email}! Check your email to confirm your account.`,
         })
-        navigate('/home')
       }
       setLoading(false)
     } else {

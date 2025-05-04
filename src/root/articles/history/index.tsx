@@ -54,15 +54,15 @@ const HistoryData = () => {
       <div className="space-y-4">
         {posts.length > 0 ? (
           posts.map((post) => (
-            <ArticleCard 
-              insideProfile
-              key={post.post_id} 
-              title={post.title} 
-              previewText={post.content.substring(0, 100)}
-              articleId={post.post_id}
-           
-              className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
-            />
+          <ArticleCard 
+            insideProfile
+            key={post.post_id} 
+            title={post.title} 
+            previewText={post.content.substring(0, 100)}
+            articleId={post.post_id}
+            rating={post.rating ?? 0}
+            className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
+          />
           ))
         ) : (
           <p className="text-zinc-800 dark:text-zinc-200">No articles removed.</p>

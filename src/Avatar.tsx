@@ -101,15 +101,11 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
       
     } catch (error) {
       console.error("Error downloading image:", error);
-      toast({
-        variant: 'destructive',
-        description: "Failed to load your profile image",
-        duration: 1500
-      });
+      
     } finally {
       setIsLoading(false);
     }
-  }, [cachedAvatars, setCachedAvatars, toast, isLoading]);
+  }, [cachedAvatars, setCachedAvatars, toast, isLoading, clearCache]);
 
   // Manage URL initialization and cleanup
   useEffect(() => {
@@ -183,23 +179,24 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
     <div className="flex flex-col items-center space-y-4">
       {/* Avatar display with loading state */}
       {avatarUrl ? (
-        <span className={cn(
+        <span
+        className={cn(
           "inline-block rounded-full overflow-hidden bg-cyan-500 text-white",
-          "transition-shadow duration-300",
-          "shadow-[0_0_8px_4px_rgba(0,255,255,0.4)]", 
-          "hover:shadow-[0_0_8px_6px_rgba(0,255,255,0.6)]", 
-          "focus:outline-none",
+          "transition-shadow duration-300 shadow-[0_0_8px_4px_rgba(0,255,255,0.4)]",
+          "hover:shadow-[0_0_8px_6px_rgba(0,255,255,0.6)] focus:outline-none",
           isLoading && "opacity-70",
           className
-        )}>
-          <img
-            src={avatarUrl}
-            alt="Avatar"
-            className="shadow-lg object-cover"
-            style={{ height: size, width: size }}
-            loading="lazy"
-            referrerPolicy="no-referrer"
-          />
+        )}
+        style={{ width: size, height: size }}
+      >
+         <img
+          src={avatarUrl}
+          alt="Avatar"
+          className="w-full h-full object-cover"
+          style={{ minWidth: size, minHeight: size, maxWidth: size, maxHeight: size }}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+        />
         </span>
       ) : (
         <div

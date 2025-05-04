@@ -1,4 +1,3 @@
-import { useParams } from 'react-router-dom';
 import SignedInNavbar from '@/components/fullComponents/SignedInNavBar';
 import ArticleCard from '@/components/fullComponents/ArticleCard';
 import { useEffect, useState } from 'react';
@@ -34,6 +33,8 @@ const DeletedArticles = () => {
     };
 
     fetchArticles();
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user.id, backendUrl]);
 
   if (isFetching) return <p>Loading...</p>;
@@ -59,7 +60,7 @@ const DeletedArticles = () => {
               title={post.title} 
               previewText={post.content.substring(0, 100)}
               articleId={post.postid}
-              rating={post?.article_ratings?.[0]?.sum}
+              rating={post?.article_ratings?.[0]?.sum as number}
               className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
             />
           ))
@@ -77,6 +78,10 @@ const DeletedArticles = () => {
   );
 };
 
+interface ArticleRating {
+  sum: number;
+}
+
 interface Article {
   postid: string;
   title: string;
@@ -87,6 +92,7 @@ interface Article {
   created_at: Date;
   deleted: boolean;
   deleted_at: Date;
+  article_ratings?: ArticleRating[];
 }
 
 export default DeletedArticles;

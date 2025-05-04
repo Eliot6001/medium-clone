@@ -29,7 +29,7 @@ export type Article = {
 const Article = () => {
   const { id } = useParams();
   const { session } = useSession();
-  const { ROLE } = useProfile();
+  const { ROLE } = useProfile(session?.access_token);
   const router = useNavigate();
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);

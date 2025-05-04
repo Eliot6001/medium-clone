@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input'
 import { useToast } from "@/components/ui/use-toast"
 import useProfile from '../../hooks/useProfileData'
 import {Info} from 'lucide-react'
-import { Toast } from '@radix-ui/react-toast'
 import axios from 'axios'
 
 export default function Account() {
@@ -22,7 +21,7 @@ export default function Account() {
   const { toast } = useToast()
   const { session } = useSession();
 
-  const { loading: isFetching, username: fetchedUserName, website: fetchedWebsite, avatarUrl: fetchedavatarUrl } = useProfile();
+  const { loading: isFetching, username: fetchedUserName, website: fetchedWebsite, avatarUrl: fetchedavatarUrl } = useProfile(session?.access_token);
 
   useEffect(() => {
     setLoading(isFetching);
@@ -62,11 +61,17 @@ export default function Account() {
         duration: 1500,
       });
   
-    } catch (error: string) {
+    } catch (error: unknown) {
+      let errorMessage = "Unknown error";
+      if (axios.isAxiosError(error) && error.response) {
+        errorMessage = error.response.data?.error || error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       toast({
         variant: "destructive",
         title: "Update failed",
-        description: `Error: ${error.response?.data?.error || error.message}`,
+        description: `Error: ${errorMessage}`,
         duration: 1500,
       });
     } finally {
@@ -77,11 +82,13 @@ export default function Account() {
   return (
     <><Nav />
       <div className="container px-8 py-6 w-8/12 ">
+        
         <form onSubmit={updateProfile} className="space-y-6 apply-colors-primary p-6 rounded-lg shadow-md">
           <div className="flex justify-center">
             <Avatar
               url={avatar_url}
               size={150}
+              //@ts-ignore
               onUpload={(event, url) => updateProfile(event, url)}
             />
           </div>

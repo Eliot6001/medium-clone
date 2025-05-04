@@ -46,34 +46,40 @@ const Main = () => {
           <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight text-primary">
             Latest Articles
           </h4>
-          {!loading ? (
-            suggestedArticles.map((article, index) => (
+            {!loading ? (
+            (suggestedArticles as Array<{
+              postid: string;
+              title: string;
+              content: string;
+              author: string;
+              postedat: string;
+            }>).map((article, index) => (
               <ArticleCard
-                key={index}
-                insideProfile={false}
-                articleId={article.postid}
-                className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
-                title={article.title}
-                previewText={
-                  !!article &&
-                  !!article?.content &&
-                  article.content
-                    .replace(/(<([^>]+)>)/gi, "")
-                    .split(" ")
-                    .slice(0, 50)
-                    .join(" ") + "..."
-                }
-                author={article.author}
-                date={article.postedat}
-                imageUrl={"https://placehold.co/600x400/EEE/31343C"}
+              key={article.postid || index}
+              insideProfile={false}
+              articleId={article.postid}
+              className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
+              title={article.title}
+              previewText={
+                article?.content
+                ? article.content
+                  .replace(/(<([^>]+)>)/gi, "")
+                  .split(" ")
+                  .slice(0, 50)
+                  .join(" ") + "..."
+                : ""
+              }
+              //@ts-ignore
+              author={article.author}
+              date={article.postedat}
+              imageUrl={"https://placehold.co/600x400/EEE/31343C"}
               />
             ))
-          ) : (
+            ) : (
             <div className=" relative ">
-              {" "}
-              <LoadingPage className="top-50 left-50" />{" "}
+              <LoadingPage className="top-50 left-50" />
             </div>
-          )}
+            )}
           {!loading && suggestedArticles.length === 0 && (
             <span className="w-full dark:border-zinc-700 border-zinc-300 border border-1 p-2 flex rounded-lg">
               <p className="text-base">
@@ -98,8 +104,12 @@ const Main = () => {
                 className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
                 title={article.title}
                 content={article.content}
-                date={new Date(article.postedat).toISOString().split("T")[0]}
-                imageUrl={"https://placehold.co/600x400/EEE/31343C"}
+                ratings={typeof article.rating === "number" ? article.rating : 0}
+                date={
+                  typeof article.postedat === "string"
+                    ? article.postedat.split("T")[0]
+                    : ""
+                }
               />
             ))
           ) : (
@@ -113,5 +123,7 @@ const Main = () => {
     </>
   );
 };
+
+
 
 export default Main;
