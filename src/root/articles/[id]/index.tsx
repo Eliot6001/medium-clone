@@ -26,6 +26,7 @@ export type Article = {
   reason?: string;
   removalBy?: string;
   removalId?: string;
+  isCategorized?: boolean;
 };
 
 const Article = () => {
@@ -36,6 +37,8 @@ const Article = () => {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [Summary, setSummary] = useState("");
+  const [fetchedSummary, setFetchedSummary] = useState<boolean>(false);
 
   // Refs for engagement tracking
   const contentContainerRef = useRef<HTMLDivElement>(null);
@@ -46,29 +49,49 @@ const Article = () => {
   const engagementBatchRef = useRef<Set<number>>(new Set());
   const batchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isViewLogged = useRef(false);
+  const fetchSummary = async () => {
+    if (!article || article?.isCategorized !== true || fetchedSummary) return; // Simplify the condition
+
+    try {
+      const { data } = await axios.get(
+        `${backendUrl}/articles/summary?postid=${id}`
+      );
+      if (data?.summary?.length > 0) {
+        setSummary(data.summary);
+      } else {
+        setSummary("There isn't a summary.");
+      }
+      setFetchedSummary(true);
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+      setFetchedSummary(true);
+    }
+  };
 
   useEffect(() => {
-    if (isViewLogged.current || loading || !article || !session?.user?.id) return;
-  
+    if (isViewLogged.current || loading || !article || !session?.user?.id)
+      return;
+
     // Send view history request
-    axios.post(`${backendUrl}/profiles/history/`, {
-      postid: id,
-      userid: session.user.id
-    },
-    {
-      headers:{
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-    }
-  
-  )
-    .then(() => {
-      console.log("View recorded in history table");
-    })
-    .catch((error) => {
-      console.error("Failed to record view:", error);
-    });
-  
+    axios
+      .post(
+        `${backendUrl}/profiles/history/`,
+        {
+          postid: id,
+          userid: session.user.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        }
+      )
+      .then(() => {
+        console.log("View recorded in history table");
+      })
+      .catch((error) => {
+        console.error("Failed to record view:", error);
+      });
   }, [loading, article, session?.user?.id, id]);
 
   useEffect(() => {
@@ -109,7 +132,9 @@ const Article = () => {
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
-        const markerIndex = markerRefs.current.findIndex(el => el === entry.target);
+        const markerIndex = markerRefs.current.findIndex(
+          (el) => el === entry.target
+        );
         if (markerIndex === -1) return;
 
         if (entry.isIntersecting && !engagedSegmentsRef.current[markerIndex]) {
@@ -120,14 +145,16 @@ const Article = () => {
               engagedSegmentsRef.current[markerIndex] = true;
               engagementBatchRef.current.add(markerIndex);
               // If all segments are engaged, flush immediately
-              console.log("Engagement batch size:", engagementBatchRef.current.size);
+              console.log(
+                "Engagement batch size:",
+                engagementBatchRef.current.size
+              );
               if (engagementBatchRef.current.size === 5) {
                 flushEngagementData();
-              }
-              else if (!batchTimerRef.current) {
+              } else if (!batchTimerRef.current) {
                 batchTimerRef.current = setTimeout(flushEngagementData, 30000); // 30s batch window
               }
-            }, 10000); // 10 seconds engagement per segment 
+            }, 10000); // 10 seconds engagement per segment
           }
         } else {
           if (timersRef.current[markerIndex]) {
@@ -140,27 +167,27 @@ const Article = () => {
     const handleBeforeUnload = () => {
       // Flush any accumulated engagement data before the page unloads
       console.log("Flushing engagement data on unload");
-      
+
       if (engagementBatchRef.current.size > 0) {
         flushEngagementData();
       }
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     const flushEngagementData = () => {
-      
       if (engagementBatchRef.current.size > 0) {
-        console.log(id)
+        console.log(id);
         const payload = {
           postid: id,
           userid: session?.user?.id || null,
           segments: Array.from(engagementBatchRef.current),
         };
-        console.log("There you go: ",payload)
-        axios.post(`${backendUrl}/profiles/engagement/`, payload)
+        console.log("There you go: ", payload);
+        axios
+          .post(`${backendUrl}/profiles/engagement/`, payload)
           .then(() => {
             console.log("Engagement data sent:", payload);
-            engagementBatchRef.current.forEach(index => {
+            engagementBatchRef.current.forEach((index) => {
               engagedSegmentsRef.current[index] = true;
             });
           })
@@ -175,27 +202,27 @@ const Article = () => {
       }
     };
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
+      if (document.visibilityState === "hidden") {
         flushEngagementData();
       }
     };
-  
-    const observer = new IntersectionObserver(observerCallback, { 
+
+    const observer = new IntersectionObserver(observerCallback, {
       threshold: 0.1, // More sensitive trigger
-      rootMargin: '0px 0px 10% 0px' // Track when element enters middle 50% of viewport
+      rootMargin: "0px 0px 10% 0px", // Track when element enters middle 50% of viewport
     });
 
     markerRefs.current.forEach((marker) => {
       if (marker) observer.observe(marker);
     });
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', flushEngagementData);
-    
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", flushEngagementData);
+
     return () => {
-      observer.disconnect()
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', flushEngagementData);
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", flushEngagementData);
       flushEngagementData(); // Final flush on unmount
     };
   }, [loading, article, session?.user.id, id]);
@@ -265,12 +292,22 @@ const Article = () => {
         {article && (
           <>
             <div className="bg-white dark:bg-zinc-800 lg:p-8 p-6 rounded-lg shadow-lg border dark:border-zinc-700 transition-colors duration-150 space-y-6">
-             <Link   className="flex items-center space-x-4 bg-gray-50 dark:bg-zinc-700 p-4 rounded-md shadow-sm hover:bg-gray-100 dark:hover:bg-zinc-600 transition-colors"
-              to={`/profile/${article.userid}`}>
-             <Avatar size={28} url={article.user_profiles?.avatar_url} onPublicRoute/>
-             <p className="text-normal text-gray-500 dark:text-zinc-400">Posted by</p>
-             <p className="text-lg font-medium text-gray-900 dark:text-zinc-100">{article.user_profiles?.username || "Unknown"}</p>
-             </Link>
+              <Link
+                className="flex items-center space-x-4 bg-gray-50 dark:bg-zinc-700 p-4 rounded-md shadow-sm hover:bg-gray-100 dark:hover:bg-zinc-600 transition-colors"
+                to={`/profile/${article.userid}`}
+              >
+                <Avatar
+                  size={28}
+                  url={article.user_profiles?.avatar_url}
+                  onPublicRoute
+                />
+                <p className="text-normal text-gray-500 dark:text-zinc-400">
+                  Posted by
+                </p>
+                <p className="text-lg font-medium text-gray-900 dark:text-zinc-100">
+                  {article.user_profiles?.username || "Unknown"}
+                </p>
+              </Link>
               <span className="flex items-center justify-between">
                 <h1 className="text-3xl font-extrabold text-primary dark:text-zinc-200">
                   {article.title}
@@ -312,10 +349,9 @@ const Article = () => {
               </span>
               <div className="relative">
                 <div
-                 ref={contentContainerRef}
+                  ref={contentContainerRef}
                   className="text-lg leading-relaxed tiptap text-zinc-800 dark:text-zinc-300"
                   dangerouslySetInnerHTML={{ __html: article.content }}
-                  
                 />
                 {/*engagement */}
                 {Array.from({ length: 5 }).map((_, index) => (
@@ -324,14 +360,14 @@ const Article = () => {
                     ref={(el) => (markerRefs.current[index] = el)}
                     style={{
                       position: "absolute",
-                      top: `${(index * 100) / 5}%`,
-                      height: "10px", // Increased from 1px for better detection
+                      top: `${(index * 100) / 3}%`,
+                      height: "10px", 
                       width: "100%",
-                      backgroundColor: "rgba(255,0,0,0.3)", // Debug color to see markers
-                      pointerEvents: 'none', 
+                      backgroundColor: "", //debug colors!
+                      pointerEvents: "none",
                     }}
                     data-marker-index={index}
-                    className="marker" 
+                    className="marker"
                   />
                 ))}
               </div>
@@ -344,7 +380,21 @@ const Article = () => {
                   </p>
                 </div>
               )}
-              <div className="flex items-center justify-start mt-10 ml-auto">
+              <div className="flex items-start justify-start mt-10 ml-auto lg:space-x-5 space-y-5 flex-col lg:flex-row">
+                <div className="bg-gradient-to-r from-gray-200 to-gray-300 dark:from-zinc-800 dark:to-zinc-700 p-6 rounded-lg shadow-xl border border-gray-200 dark:border-zinc-800  w-full flex-1 transition-transform duration-200">
+                  <Button
+                    disabled={fetchedSummary}
+                    onClick={fetchSummary}
+                    className="max-w-fit py-2 px-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all"
+                  >
+                    {fetchedSummary ? "Summary Loaded" : "Read A summary!"}
+                  </Button>
+                  <div className="mt-4">
+                    {Summary || (
+                      <div className="animate-pulse bg-gray-300 dark:bg-zinc-700 rounded-lg w-48 h-6 shadow-lg"></div>
+                    )}
+                  </div>
+                </div>
                 <div className="bg-gray-100 dark:bg-zinc-800 p-4 lg:p-6 rounded-lg shadow-md border border-gray-200 dark:border-zinc-800 transition-all w-fit ml-auto">
                   <RatingComponent articleId={id as string} />
                 </div>

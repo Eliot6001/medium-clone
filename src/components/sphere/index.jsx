@@ -8,11 +8,13 @@ export default function VibrationSphere({ isDark = true, disableForwarding = fal
   const targetRotRef = useRef({ x: 0, y: 0 });
   const curRotRef = useRef({ x: 0, y: 0 });
   const labelsRef = useRef([]);
+  const isMounted = useRef(false);
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
   let pointerMoved = false;
 
   useEffect(() => {
+    isMounted.current = true;
     if (!mountRef.current) return;
 
     // SCENE & CAMERA
@@ -129,10 +131,13 @@ export default function VibrationSphere({ isDark = true, disableForwarding = fal
     const targetRot = { x: 0, y: 0 };
     const curRot = { x: 0, y: 0 };
     const onDown = () =>  {
+      if (!mountRef.current || !isMounted.current) return;
       dragging = true;
       pointerMoved = false;
     };
     const onUp = e => {
+      if (!mountRef.current || !isMounted.current) return;
+
       dragging = false;
       if (pointerMoved) return;
     
@@ -155,6 +160,8 @@ export default function VibrationSphere({ isDark = true, disableForwarding = fal
       }
     };
     const onMove = e => {
+      if (!mountRef.current || !isMounted.current) return;
+
       if (!dragging) return; // ✨ fix here
       pointerMoved = true;
       targetRotRef.current.y += e.movementX * 0.005;
@@ -205,12 +212,16 @@ export default function VibrationSphere({ isDark = true, disableForwarding = fal
 
     // CLEANUP
     return () => {
+      isMounted.current = false;
       cancelAnimationFrame(req);
       window.removeEventListener('resize', onResize);
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
       renderer.domElement.removeEventListener('pointermove', onMove);
-      mountRef.current.removeChild(renderer.domElement);
+      if (mountRef.current) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+    
       sphereGeo.dispose();
       sphereMaterial.dispose();
       renderer.dispose();
