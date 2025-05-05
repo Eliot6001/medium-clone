@@ -1,124 +1,107 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import FIELDS from '@/components/fields'
+import FIELDS from '@/components/fields';
 
-export default function VibrationSphere({isDark= true, disableForwarding = false}) {
-
+export default function VibrationSphere({ isDark = true, disableForwarding = false }) {
   const mountRef = useRef(null);
-  const fields = FIELDS
-  
-  const sphereRef = useRef();
-  const labelsRef = useRef([]);
   const anchorsRef = useRef([]);
-  const clock = useRef(new THREE.Clock());
-  
-  const raycaster = useRef(new THREE.Raycaster());
-  const mouse = useRef(new THREE.Vector2());
-  
-  // Drag control
-  const pointerDown = useRef(false);
-  const targetRotation = useRef({ x: 0, y: 0 });
-  const currentRotation = useRef({ x: 0, y: 0 });
-  
+  const targetRotRef = useRef({ x: 0, y: 0 });
+  const curRotRef = useRef({ x: 0, y: 0 });
+  const labelsRef = useRef([]);
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let pointerMoved = false;
+
   useEffect(() => {
     if (!mountRef.current) return;
-    
-    // --- SETUP SCENE ---
+
+    // SCENE & CAMERA
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(isDark ? "#27272a": "#f4f4f5");
-    
+    scene.background = new THREE.Color(isDark ? '#27272a' : '#f4f4f5');
     const camera = new THREE.PerspectiveCamera(
-      100,
+      60,
       mountRef.current.clientWidth / mountRef.current.clientHeight,
       0.1,
       1000
     );
-    camera.position.z = 5;
+    camera.position.set(0, 0, 6);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    // RENDERER
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     mountRef.current.appendChild(renderer.domElement);
-    const currentColor = scene.background;
 
-    const invertedColor = (255-currentColor.r,255-currentColor.g,255-currentColor.b)
-    // --- CREATE VIBRATING SPHERE ---
-    const sphereGeo = new THREE.IcosahedronGeometry(3, 3);
-    const originalPositions = sphereGeo.attributes.position.array.slice();
-    const sphereMat = new THREE.MeshPhongMaterial({
-      color: 0x4488ff,
+    // CLOCK & UNIFORMS
+    const clock = new THREE.Clock();
+    const uniforms = { time: { value: 0 } };
+
+    // SHADER MATERIAL FOR SPHERE
+    const sphereMaterial = new THREE.ShaderMaterial({
+      uniforms,
       wireframe: true,
-      opacity: 0.25,
-      transparent: true
+      vertexShader: `
+        uniform float time;
+        varying vec3 vColor;
+        void main() {
+          float amp = 0.02;
+          float freq = 1.0;
+          vec3 pos = position + normal * sin(time * freq + position.y * 2.0) * amp;
+          vColor = vec3(
+            0.6 + 0.4 * sin(time * 0.2 + position.x),
+            0.6 + 0.4 * sin(time * 0.2 + position.y + 2.0),
+            0.6 + 0.4 * sin(time * 0.2 + position.z + 4.0)
+          );
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        void main() {
+          gl_FragColor = vec4(vColor, 1.0);
+        }
+      `
     });
-    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-    sphereRef.current = sphere;
+
+    // CREATE SPHERE
+    const sphereGeo = new THREE.IcosahedronGeometry(2, 2);
+    const sphere = new THREE.Mesh(sphereGeo, sphereMaterial);
     scene.add(sphere);
-    
-    // --- CREATE EVENLY SPACED LABELS USING FIBONACCI ---
+
+    // CREATE LABEL ANCHORS & LABELS (Fibonacci)
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
     anchorsRef.current = [];
     labelsRef.current = [];
-    const n = fields.length;
-    
-    for (let i = 0; i < n; i++) {
-      const y = 1 - (i / (n - 1)) * 2; 
+    FIELDS.forEach((field, i) => {
+      // Compute point on unit sphere
+      const y = 1 - (i / (FIELDS.length - 1)) * 2;
       const radius = Math.sqrt(1 - y * y);
       const theta = goldenAngle * i;
       const x = Math.cos(theta) * radius;
       const z = Math.sin(theta) * radius;
-      
-      const direction = new THREE.Vector3(x, y, z).normalize();
-      
-      // Create anchor at surface (radius = 3)
+      const dir = new THREE.Vector3(x, y, z).normalize();
+
+      // Anchor at surface (radius 2)
       const anchor = new THREE.Object3D();
-      anchor.position.copy(direction.clone().multiplyScalar(3));
+      anchor.position.copy(dir.clone().multiplyScalar(0));
       sphere.add(anchor);
       anchorsRef.current.push(anchor);
-      
-      // Create label canvas
+
+      // Create canvas label
       const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
       canvas.width = 512;
       canvas.height = 256;
-      
-      // Draw background with rounded corners
-      ctx.fillStyle = 'rgba(255,255,255,0.00)';
-      ctx.beginPath();
-      
-      // Use fallback for browsers that don't support roundRect
-      if (ctx.roundRect) {
-        ctx.roundRect(0, 0, canvas.width, canvas.height, 20);
-      } else {
-        // Simple rounded rectangle fallback
-        const radius = 20;
-        ctx.moveTo(radius, 0);
-        ctx.lineTo(canvas.width - radius, 0);
-        ctx.quadraticCurveTo(canvas.width, 0, canvas.width, radius);
-        ctx.lineTo(canvas.width, canvas.height - radius);
-        ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - radius, canvas.height);
-        ctx.lineTo(radius, canvas.height);
-        ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - radius);
-        ctx.lineTo(0, radius);
-        ctx.quadraticCurveTo(0, 0, radius, 0);
-      }
-      
-      ctx.fill();
-      
-      // Draw text
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.font = 'bold 48px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
+      ctx.fillStyle = isDark ? '#fff' : '#000';
+      ctx.fillText(field, canvas.width / 2, canvas.height / 2);
 
-      ctx.fillStyle = !isDark? '#000a' : '#fff';
-      ctx.fillText(fields[i], canvas.width / 2, canvas.height / 2);
-      
-      // Create texture from canvas
       const texture = new THREE.CanvasTexture(canvas);
-      // Fix for GL_INVALID_OPERATION: Texture is immutable
-      texture.generateMipmaps = false;
       texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      
+      texture.generateMipmaps = false;
+
       const labelGeo = new THREE.PlaneGeometry(1.5, 0.75);
       const labelMat = new THREE.MeshBasicMaterial({
         map: texture,
@@ -127,161 +110,117 @@ export default function VibrationSphere({isDark= true, disableForwarding = false
         depthTest: true,
         depthWrite: false
       });
-      
+
       const label = new THREE.Mesh(labelGeo, labelMat);
-      label.userData = { field: fields[i], originalTexture: texture };
-      
-      // Place label slightly outwards from anchor
-      label.position.copy(direction.clone().multiplyScalar(0.2));
+      // position a bit outwards so it sits above the surface
+      label.position.copy(dir.clone().multiplyScalar(2.1));
       anchor.add(label);
       labelsRef.current.push(label);
-    }
+    });
+
+    // LIGHTING
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dl = new THREE.DirectionalLight(0xffffff, 1);
+    dl.position.set(5, 5, 5);
+    scene.add(dl);
+
+    // ROTATION CONTROL
+    let dragging = false;
+    const targetRot = { x: 0, y: 0 };
+    const curRot = { x: 0, y: 0 };
+    const onDown = () =>  {
+      dragging = true;
+      pointerMoved = false;
+    };
+    const onUp = e => {
+      dragging = false;
+      if (pointerMoved) return;
     
-    // --- LIGHTING ---
-    const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambient);
-    const directional = new THREE.DirectionalLight(0xffffff, 1);
-    directional.position.set(5, 5, 5);
-    scene.add(directional);
-    
-    // --- POINTER EVENTS ---
-    const onPointerDown = (e) => {
-      pointerDown.current = true;
       const rect = renderer.domElement.getBoundingClientRect();
-      mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    };
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     
-    const onPointerMove = (e) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-      
-      if (!pointerDown.current) return;
-      targetRotation.current.x += e.movementY * 0.005;
-      targetRotation.current.y += e.movementX * 0.005;
-    };
+      raycaster.setFromCamera(mouse, camera);
+      const visibleLabels = labelsRef.current.filter(label => label.visible);
+      const intersects = raycaster.intersectObjects(visibleLabels);
     
-    const onPointerUp = () => {
-      pointerDown.current = false;
-    };
-    
-    // Separate click handler (not pointerclick which isn't a standard event)
-    const onClick = (e) => {
-      // Check if we've been dragging - if so, don't trigger click
-      if (pointerDown.current) return;
-      
-      raycaster.current.setFromCamera(mouse.current, camera);
-      
-      // Get visible labels
-      const visibleLabels = labelsRef.current.filter(label => {
-        const worldPos = new THREE.Vector3();
-        label.getWorldPosition(worldPos);
-        
-        // Vector from camera to label
-        const cameraToLabel = worldPos.clone().sub(camera.position);
-        
-        // Vector from sphere center to label
-        const sphereToLabel = worldPos.clone().sub(sphere.position);
-        
-        // Dot product should be negative for labels facing camera
-        return cameraToLabel.dot(sphereToLabel) < 0;
-      });
-      
-      const intersects = raycaster.current.intersectObjects(visibleLabels);
-      
       if (intersects.length > 0) {
-        const field = intersects[0].object.userData.field;
-        if(!disableForwarding)
-          window.location.href = `/explore?field=${field}`;
-        else {
-          console.log("You selected", field)
+        const label = intersects[0].object;
+        const anchor = label.parent;
+        const index = anchorsRef.current.findIndex(a => a === anchor);
+        const field = FIELDS[index];
+        if (!disableForwarding && field) {
+          window.location.href = `/explore?field=${encodeURIComponent(field)}`;
         }
       }
     };
-    
-    renderer.domElement.addEventListener('pointerdown', onPointerDown);
-    renderer.domElement.addEventListener('pointermove', onPointerMove);
-    renderer.domElement.addEventListener('pointerup', onPointerUp);
-    
-    // Use click instead of pointerclick (which isn't a standard event)
-    renderer.domElement.addEventListener('click', onClick);
-    
-    // --- ANIMATION LOOP ---
+    const onMove = e => {
+      if (!dragging) return; // ✨ fix here
+      pointerMoved = true;
+      targetRotRef.current.y += e.movementX * 0.005;
+      targetRotRef.current.x += e.movementY * 0.005;
+    };
+    renderer.domElement.addEventListener('pointerdown', onDown);
+    renderer.domElement.addEventListener('pointerup', onUp);
+    renderer.domElement.addEventListener('pointermove', onMove);
+
+    // ANIMATION LOOP
+    let req;
     const animate = () => {
-      requestAnimationFrame(animate);
-      const time = clock.current.getElapsedTime();
-      
-      // Vibrate sphere vertices
-      const positions = sphere.geometry.attributes.position.array;
-      for (let i = 0; i < positions.length; i++) {
-        positions[i] = originalPositions[i] + Math.sin(time * 3 + i) * 0.05;
-      }
-      sphere.geometry.attributes.position.needsUpdate = true;
-      
-      // Smooth rotation
-      currentRotation.current.x += (targetRotation.current.x - currentRotation.current.x) * 0.1;
-      currentRotation.current.y += (targetRotation.current.y - currentRotation.current.y) * 0.1;
-      sphere.rotation.set(currentRotation.current.x, currentRotation.current.y, 0);
-      
-      // Make each label face the camera with correct orientation
+      uniforms.time.value = clock.getElapsedTime();
+      // smooth sphere rotation
+      curRotRef.current.x += (targetRotRef.current.x - curRotRef.current.x) * 0.1;
+      curRotRef.current.y += (targetRotRef.current.y - curRotRef.current.y) * 0.1;
+      sphere.rotation.set(curRotRef.current.x, curRotRef.current.y, 0);
+
+      // update labels: always face camera and stay readable
       labelsRef.current.forEach(label => {
-        // Make label face camera
+        // Face the camera
         label.lookAt(camera.position);
-        
-        // Get label's world position
-        const worldPos = new THREE.Vector3();
-        label.getWorldPosition(worldPos);
-        
-        // Get label's world orientation vectors
-        const worldUp = new THREE.Vector3(0, 1, 0).applyQuaternion(label.getWorldQuaternion(new THREE.Quaternion()));
-        
-        // Calculate angle between world up and label's up vector
-        const angle = worldUp.angleTo(new THREE.Vector3(0, 1, 0));
-        
-        // If angle is greater than 90 degrees, the text would appear upside down
-        // Rotate label 180 degrees around its local Z-axis to fix orientation
-        if (angle > Math.PI/2) {
-          // Apply 180-degree rotation around label's local Z-axis
+      
+        // Get world "up" vector of the label
+        const labelUp = new THREE.Vector3(0, 1, 0).applyQuaternion(label.getWorldQuaternion(new THREE.Quaternion()));
+      
+        // Compare with global up direction to detect if flipped
+        const angle = labelUp.angleTo(new THREE.Vector3(0, 1, 0));
+      
+        // Flip if angle is greater than 90 degrees (i.e. upside down)
+        if (angle > Math.PI / 2) {
           label.rotateZ(Math.PI);
         }
       });
-      
+
       renderer.render(scene, camera);
+      req = requestAnimationFrame(animate);
     };
     animate();
-    
-    // --- RESIZE HANDLER ---
-    const handleResize = () => {
+
+    // RESIZE HANDLER
+    const onResize = () => {
       camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     };
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener('resize', onResize);
+
+    // CLEANUP
     return () => {
-      renderer.domElement.removeEventListener('pointerdown', onPointerDown);
-      renderer.domElement.removeEventListener('pointermove', onPointerMove);
-      renderer.domElement.removeEventListener('pointerup', onPointerUp);
-      renderer.domElement.removeEventListener('click', onClick);
-      window.removeEventListener('resize', handleResize);
-      if (mountRef.current?.contains(renderer.domElement)) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
+      cancelAnimationFrame(req);
+      window.removeEventListener('resize', onResize);
+      renderer.domElement.removeEventListener('pointerdown', onDown);
+      renderer.domElement.removeEventListener('pointerup', onUp);
+      renderer.domElement.removeEventListener('pointermove', onMove);
+      mountRef.current.removeChild(renderer.domElement);
+      sphereGeo.dispose();
+      sphereMaterial.dispose();
       renderer.dispose();
     };
   }, [isDark, disableForwarding]);
-  
+
   return (
     <div
       ref={mountRef}
-      style={{
-        width: '100%',
-        height: '600px',
-        borderRadius: '16px',
-        overflow: 'hidden',
-        background: 'radial-gradient(circle at center, #1a1a2a 0%, #0a0a1a 100%)'
-      }}
+      style={{ width: '100%', height: '600px', borderRadius: '16px', overflow: 'hidden' }}
     />
   );
 }
