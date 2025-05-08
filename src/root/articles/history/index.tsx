@@ -58,7 +58,13 @@ const HistoryData = () => {
             insideProfile
             key={post.post_id} 
             title={post.title} 
-            previewText={post.content.substring(0, 100)}
+            previewText={post?.content
+              ? post.content
+                .replace(/(<([^>]+)>)/gi, "")
+                .split(" ")
+                .slice(0, 50)
+                .join(" ") + "..."
+              : ""}
             articleId={post.post_id}
             rating={post.rating ?? 0}
             className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"

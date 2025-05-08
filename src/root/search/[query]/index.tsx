@@ -62,7 +62,7 @@ const Search = () => {
               key={article.postid || index}
               articleId={article.postid}
               insideProfile={false}
-              className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all "
+              className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all max-w-3/4 w-3/4"
               title={article.title}
               previewText={article.content.replace(/<[^>]*>/g, "").substring(0, 100)}
               authorName={article?.username }
@@ -78,12 +78,7 @@ const Search = () => {
         })}
         
         </main>
-        <div className="lg:w-1/3 lg:space-y-5 space-y-3 lg:p-2 lg:py-5 p-3 py-4">
-            <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight">
-              Related Articles
-            </h4>
-            <SuggestionCard />
-          </div>
+        
       </div>
     </>
   );

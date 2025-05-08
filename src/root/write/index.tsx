@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { z } from "zod"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,7 +23,8 @@ import Nav from '@/components/fullComponents/Nav';
 
 import axios from 'axios'
 import { toast } from '@/components/ui/use-toast';
-import { Navigate } from 'react-router-dom';
+import { Navigate, redirect } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 
 const formSchema = z.object({
@@ -69,7 +69,9 @@ const Write = () => {
         variant: 'success',
         description: `Success!`
       });
-      console.log(response, "Success");
+
+      if(response) redirect("/main");
+      
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -82,7 +84,7 @@ const Write = () => {
   return (
     <>
       <Nav />
-      <div className="overflow-x-hidden">
+      <div className="overflow-x-hidden ">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-8 apply-colors-secondary px-10 py-5 h-screen overflow-x-hidden">
             <FormField
@@ -103,7 +105,7 @@ const Write = () => {
               control={form.control}
               name="text"
               render={({ field }) => (
-                <FormItem className="flex-1  max-h-full ">
+                <FormItem className="flex-1  ">
                   <FormControl>
                     <Tiptap description={''} onChange={field.onChange} setUploadImage={setUploadingImage}/>
                   </FormControl>
@@ -113,7 +115,10 @@ const Write = () => {
             />
 
             <Button type="submit" disabled={uploadingImage}>Submit</Button>
-            {uploadingImage && <div className="uploading-indicator"><Loader2 className="spin animate-spin"/> Uploading image...</div>}
+            {
+            uploadingImage && <div className="uploading-indicator">
+              <Loader2 className="spin animate-spin"/> Uploading image...</div>
+              }
 
           </form>
         </Form>

@@ -3,6 +3,8 @@ import { Editor } from "@tiptap/react";
 import { useUploadThing } from "../uploadthing"; // Make sure this hook is properly configured
 import "./styles.scss";
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2 second
 
 type AddImageProps = {
   editor: Editor | null;
@@ -23,21 +25,28 @@ const AddImage = ({ editor, setUploadingImage }: AddImageProps) => {
       setUploadingImage(true); // Mark upload as started
 
       // Function to trigger file upload using UploadThing.
-      const uploadFile = async (file: File) => {
-        // Directly pass the file in an array to startUpload.
-        const result = await startUpload([file]);
-        console.log(result, "data from uploadthing");
-        return result; // Expected to be an array with file info, including .url
+      const uploadFile = async (file: File, retries = 0): Promise<unknown> => {
+        try {
+          const result = await startUpload([file]);
+          console.log(result, "data from uploadthing");
+          return result;
+        } catch (error) {
+          console.error(`Upload attempt ${retries + 1} failed`, error);
+          if (retries < MAX_RETRIES) {
+            console.log(`Retrying upload in ${RETRY_DELAY}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+            return uploadFile(file, retries + 1);
+          }
+          throw new Error("Max retries reached.");
+        }
       };
-      const reader = new FileReader();
+    const reader = new FileReader();
       reader.onload = async (e) => {
         const result = e.target?.result;
         if (typeof result === "string" && editor) {
-          // Create a temporary preview from the base64 data.
           const base64Data = result.split(",")[1];
           const mimeType = file.type;
           if (base64Data) {
-            // Convert base64 string to binary data and create a Blob.
             const byteCharacters = atob(base64Data);
             const byteNumbers = new Array(byteCharacters.length);
             for (let i = 0; i < byteCharacters.length; i++) {
@@ -47,41 +56,30 @@ const AddImage = ({ editor, setUploadingImage }: AddImageProps) => {
             const blob = new Blob([byteArray], { type: mimeType });
             const tempUrl = URL.createObjectURL(blob);
 
-            // Generate a unique ID for the image node.
             const uniqueId = `upload-${Date.now()}-${Math.random()}`;
-
-            // Insert the image with the temporary URL and a custom attribute for identification.
             const { state } = editor;
             const { selection } = state;
             const position = selection.$head.pos;
-            editor
-              .chain()
-              .insertContentAt(position, {
-                type: "image",
-                attrs: { src: tempUrl, "data-upload-id": uniqueId },
-              })
-              .run();
-           
-            // Now trigger the actual upload.
+            editor.chain().insertContentAt(position, {
+              type: "image",
+              attrs: { src: tempUrl, "data-upload-id": uniqueId },
+            }).run();
+
             try {
               const uploadResult = await uploadFile(file);
               const uploadedUrl = uploadResult?.[0]?.ufsUrl ?? "";
               if (uploadedUrl) {
-                // Update the image in the editor by matching the unique attribute.
                 editor.commands.updateAttributes("image", {
                   src: uploadedUrl,
                   "data-upload-id": uniqueId,
                 });
               }
             } catch (error) {
-              console.error("Upload failed:", error);
-              // Optionally, remove the temporary image or notify the user.
-            }
-            finally{
+              console.error("Final upload failed after retries:", error);
+            } finally {
               setUploadingImage(false);
             }
 
-            // Clean up the temporary URL after a delay.
             setTimeout(() => {
               URL.revokeObjectURL(tempUrl);
             }, 10000);

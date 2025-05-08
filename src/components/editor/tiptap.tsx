@@ -47,10 +47,10 @@ const Tiptap = ({
     editorProps: {
       attributes: {
         class: cn(
-          "editor-wrapper w-full rounded-md border bg-white p-3 ",
+          "editor-wrapper w-full rounded-md border bg-white p-3 h-full min-h-full ",
           "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 transition-all duration-150"
         ),
-        spellcheck: "false",
+        spellcheck: "true",
       },
     },
     onUpdate(evt) {
@@ -76,8 +76,8 @@ const Tiptap = ({
     <div className="h-full ">
       {" "}
       {/* Make sure the wrapper is h-full */}
-      <Toolbar editor={editor} />
-      <div className="editor-wrapper h-80 overflow-y-scroll no-scrollbar relative">
+      <Toolbar editor={editor} className="sticky top-0 shadow-md z-20" />
+      <div className="editor-wrapper overflow-y-scroll no-scrollbar ">
         {" "}
         {/* Scroll here */}
         <AddImage editor={editor}  setUploadingImage={setUploadImage} />

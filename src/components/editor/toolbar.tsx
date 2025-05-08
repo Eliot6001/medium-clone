@@ -16,10 +16,11 @@ import { Toggle } from '@/components/ui/toggle'
 import './styles.scss'
 import { cn } from '@/lib/utils'
 type ToolbarProps = {
-  editor: Editor | null
+  editor: Editor | null;
+  className?:string;
 }
 
-const Toolbar = ({ editor }: ToolbarProps) => {
+const Toolbar = ({ editor, className }: ToolbarProps) => {
 
   const setLink = React.useCallback(() => {
     if (!editor) return null
@@ -46,7 +47,7 @@ const Toolbar = ({ editor }: ToolbarProps) => {
   if (!editor) return null
 
   return (
-    <div className="flex space-x-2 p-2 bg-gray-100 rounded-lg apply-colors-primary ">
+    <div className={cn("flex space-x-2 p-2 bg-gray-100 rounded-lg apply-colors-primary ", className)}>
       <Toggle
         pressed={editor.isActive('heading', { level: 2 })}
         onPressedChange={() => {
