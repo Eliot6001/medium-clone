@@ -16,7 +16,7 @@ const TopNavbar = () => {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="px-3 h-screen w-1/3 flex flex-col">
-            <Link to="/main" className="mr-6 lg:flex " >
+            <Link to="/main" className="mr-6 lg:flex rounded-full" >
               <Logo className="w-8 h-6" />
               <span className="sr-only">Thread</span>
             </Link>
@@ -41,8 +41,8 @@ const TopNavbar = () => {
           </SheetContent>
         </Sheet>
 
-        <Link to="/main" className="mr-6 hidden lg:flex apply-colors-primary" >
-          <Logo className="w-8 h-6 w" />
+        <Link to="/main" className="mr-6 hidden lg:flex" >
+          <Logo className="w-8 h-6 " />
           <span className="sr-only">Thread</span>
         </Link>
         <nav className="ml-auto items-center gap-6 hidden lg:flex">
