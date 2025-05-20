@@ -23,7 +23,7 @@ import Nav from '@/components/fullComponents/Nav';
 
 import axios from 'axios'
 import { toast } from '@/components/ui/use-toast';
-import { Navigate, redirect } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 
@@ -45,7 +45,7 @@ const Write = () => {
   })
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { session } = useSession();
- 
+ const navigate = useNavigate();
   if (!session) {
     return <Navigate to="/login" replace />
   }
@@ -69,8 +69,9 @@ const Write = () => {
         variant: 'success',
         description: `Success!`
       });
-
-      if(response) redirect("/main");
+      form.reset();
+    
+      if(response.data) return; //navigate("/main"); 
       
     } catch (error) {
       toast({

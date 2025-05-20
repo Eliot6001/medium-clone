@@ -122,23 +122,24 @@ const Profile = () => {
         </div>
 
         {/* Related Articles */}
-        <div className="w-full lg:w-1/4">
-          <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600">
-            <h4 className="mb-4 text-xl font-semibold tracking-tight text-primary dark:text-zinc-200 border-b border-gray-300 dark:border-zinc-600 pb-2">
-              Popular Articles
-            </h4>
-            {!loadingPopular ? popularArticles.map((article, index) => (
-            <SuggestionCard 
-              key={index}
-              postid={article.postid}
-              className="bg-zinc-100 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
-              title={article.title}
-              content={article.content}
-              date={new Date(article.postedat as string).toISOString().split('T')[0]}
-              imageUrl={'https://placehold.co/600x400/EEE/31343C' as string}
-            />
-          )) : <div className=" relative "> <LoadingPage className="top-50 left-50"/> </div> }
-          </div>
+  <div className="w-full lg:w-1/4">
+     <div className="bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-lg p-6 border border-gray-300 dark:border-zinc-600 space-y-8">
+          <h4 className="mb-4 text-xl font-semibold tracking-tight text-primary dark:text-zinc-200 border-b border-gray-300 dark:border-zinc-600 pb-2">
+          Popular Articles
+          </h4>
+          {!loadingPopular ? popularArticles.map((article, index) => (
+                <SuggestionCard 
+                  key={index}
+                  postid={article.postid}
+                  className="bg-zinc-100 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 transition-all duration-150"
+                  title={article.title}
+                  content={article.content}
+                  ratings={article.interaction_count as number}
+                  date={new Date(article.postedat).toISOString().split('T')[0]}
+                  imageUrl={'https://placehold.co/600x400/EEE/31343C' as string}
+                />
+              )) : <div className=" relative "> <LoadingPage className="top-50 left-50"/> </div> }
+        </div>
         </div>
       </main>
     </>

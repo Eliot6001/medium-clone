@@ -44,7 +44,7 @@ const Main = () => {
         {/* Center Column: Latest Articles */}
         <div className="flex-1 lg:py-6 lg:px-12 py-4 lg:space-y-5 space-y-3 w-11/12">
           <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight text-primary">
-            Latest Articles
+            {session?.access_token ? "Recommendations" : "Latest Articles"}
           </h4>
             {!loading ? (
             (suggestedArticles as Array<{
@@ -96,7 +96,7 @@ const Main = () => {
         {/* Right Column: Related Articles */}
         <div className="w-11/12 lg:w-3/12 py-4 lg:space-y-5 space-y-3 ">
           <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight text-primary">
-            Related Articles
+            Popular Articles
           </h4>
           {!loadingPopular ? (
             popularArticles.map((article, index) => (

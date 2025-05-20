@@ -11,12 +11,12 @@ const TopNavbar = () => {
         <Sheet>
           <SheetTrigger asChild >
             <Button variant="outline" size="icon" className="rounded-xl lg:hidden">
-              <MenuIcon className="h-6 w-6" />
+              <MenuIcon className="h-6 w-6 " />
               <span className="sr-only">Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="px-3 h-screen w-1/3 flex flex-col">
-            <Link to="/main" className="mr-6 lg:flex" >
+            <Link to="/main" className="mr-6 lg:flex " >
               <Logo className="w-8 h-6" />
               <span className="sr-only">Thread</span>
             </Link>
@@ -41,8 +41,8 @@ const TopNavbar = () => {
           </SheetContent>
         </Sheet>
 
-        <Link to="/main" className="mr-6 hidden lg:flex " >
-          <Logo className="w-8 h-6 " />
+        <Link to="/main" className="mr-6 hidden lg:flex apply-colors-primary" >
+          <Logo className="w-8 h-6 w" />
           <span className="sr-only">Thread</span>
         </Link>
         <nav className="ml-auto items-center gap-6 hidden lg:flex">

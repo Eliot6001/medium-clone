@@ -4,10 +4,10 @@ import { useTheme } from "@/components/theme-provider";
 import {cn} from '@/lib/utils'
 
 const Logo: React.ComponentType<React.SVGProps<SVGSVGElement> & { className?: string }> = ({ className }) => {
-  const { theme } = useTheme();
+  const { theme } = useTheme(); 
   return (
-    <>
-    <span  className={cn("rounded-full hover:bg-primary/20 p-2 transition-all duration-250")}>
+    <div className="hover:bg-primary/20 w-8 rounded-full p-3 transition-all duration-250 flex items-center justify-center">
+    <span  className={cn("")}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 100 150"
@@ -21,7 +21,7 @@ const Logo: React.ComponentType<React.SVGProps<SVGSVGElement> & { className?: st
         <path d="M90 140 Q70 50, 50 75 T10 10" />
       </svg>
       </span>
-    </>
+    </div>
   );
 }
 export default Logo;

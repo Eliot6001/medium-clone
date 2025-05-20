@@ -15,7 +15,7 @@ interface CacheEntry {
 }
 
 const cache = new Map<string, CacheEntry>();
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+const CACHE_DURATION =  60 * 1000; // a minute in milliseconds
 
 /**
  * Fetches “popular” articles on mount or when the route changes,
@@ -50,9 +50,9 @@ export function usePopularArticles(
       }
 
       try {
-        const { data } = await axios.get<Article[]>(
-          `${backendUrl}/articles/popular`
-        );
+       const { data } = await axios.get<Article[]>(
+  `${backendUrl}/articles/popular`
+);
         if (cancelled) return;
 
         const trimmed = data.map((article) => {
