@@ -1,30 +1,15 @@
 import SignedInNavbar from "@/components/fullComponents/SignedInNavBar";
 import ArticleCard from "@/components/fullComponents/ArticleCard";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import navigate from 'react-router-dom'
-import { useSession } from "@/context/SupabaseContext";
 import LoadingPage from "@/components/LoadingPage";
 import axios from "axios";
 import FIELDS from '@/components/fields'
-
-type Article = {
-  postid: string;
-  title: string;
-  content: string;
-  author: string;
-  postedat: string;
-  username?: string;
-  avatar_url?: string;
-  userid?: string;
-  created_at?: string;
-  authorId?: string;
-};
+import Article from "../articles/[id]";
 
 const Explore = () => {
   const [suggestedArticles, setSuggestedArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
-  const { session } = useSession();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { search } = useLocation();
   const selectedField = new URLSearchParams(search).get('field');
@@ -92,13 +77,7 @@ useEffect(() => {
             Exploring articles
           </h4>
           {!loading ? (
-            (suggestedArticles as Array<{
-              postid: string;
-              title: string;
-              content: string;
-              author: string;
-              postedat: string;
-            }>).map((article, index) => (
+            suggestedArticles.map((article, index) => (
               <ArticleCard
                 key={article.postid || index}
                 insideProfile={false}
@@ -114,11 +93,10 @@ useEffect(() => {
                         .join(" ") + "..."
                     : ""
                 }
-                authorName={article.username}
-                authorImage={article.avatar_url}
+                authorName={article.user_profiles?.username}
+                authorImage={article.user_profiles?.avatar_url}
                 authorId={article.userid}
-                date={article.created_at}
-                imageUrl={"https://placehold.co/600x400/EEE/31343C"}
+                publishedAt={article.created_at}
               />
             ))
           ) : (

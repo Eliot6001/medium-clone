@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils"
 import './LoadingPage.css' /* CSS file to define animations, sadly*/
 
 const LoadingPage = ({className}: {className?: string}) => {

@@ -3,15 +3,13 @@ import {useState} from 'react'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useTheme } from "@/components/theme-provider"
 
 export function ModeToggle({ className }: { className?: string }) {
   const { setTheme } = useTheme()  
-  const [light, setLight] = useState<Boolean>(true)
+  const [light, setLight] = useState<boolean>(true)
   const handleTheme = () => {
     setLight(!light);
     if (light) setTheme("light");

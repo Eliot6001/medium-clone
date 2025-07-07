@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { Button } from "../ui/button";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { toast } from "../ui/use-toast";
@@ -120,6 +120,7 @@ const RatingComponent = ({ articleId }: { articleId: string }) => {
   );
 
   return (
+    <Suspense>
     <div className="flex items-center space-x-4">
       <Button
         variant="outline"
@@ -147,6 +148,7 @@ const RatingComponent = ({ articleId }: { articleId: string }) => {
         <ThumbsDown size={20} />
       </Button>
     </div>
+    </Suspense>
   );
 };
 

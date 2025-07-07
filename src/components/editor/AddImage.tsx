@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Editor } from "@tiptap/react";
 import { useUploadThing } from "../uploadthing"; // Make sure this hook is properly configured
 import "./styles.scss";
@@ -67,7 +67,9 @@ const AddImage = ({ editor, setUploadingImage }: AddImageProps) => {
 
             try {
               const uploadResult = await uploadFile(file);
-              const uploadedUrl = uploadResult?.[0]?.ufsUrl ?? "";
+                const uploadedUrl = Array.isArray(uploadResult) && uploadResult[0] && typeof uploadResult[0] === "object"
+                  ? (uploadResult[0] as { ufsUrl?: string }).ufsUrl ?? ""
+                  : "";
               if (uploadedUrl) {
                 editor.commands.updateAttributes("image", {
                   src: uploadedUrl,

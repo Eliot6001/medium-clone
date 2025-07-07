@@ -1,8 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import {useState} from 'react'
-import { toast } from "@/components/ui/use-toast"
+import {Suspense, useState} from 'react'
 import {
   Form,
   FormControl,
@@ -41,7 +40,7 @@ const SearchButton = ({className}: {className?: string}) => {
 
   return (
     <>
-    
+    <Suspense>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={cn("w-2/3 space-y-6", className)}>
       
@@ -73,6 +72,7 @@ const SearchButton = ({className}: {className?: string}) => {
 
       </form>
     </Form>
+    </Suspense>
     </>
   )
 }

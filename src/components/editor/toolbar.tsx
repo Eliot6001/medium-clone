@@ -1,5 +1,4 @@
 
-import React from 'react'
 import { type Editor } from '@tiptap/react'
 import {
   Bold,
@@ -15,6 +14,8 @@ import {
 import { Toggle } from '@/components/ui/toggle'
 import './styles.scss'
 import { cn } from '@/lib/utils'
+import { useCallback } from 'react'
+
 type ToolbarProps = {
   editor: Editor | null;
   className?:string;
@@ -22,7 +23,7 @@ type ToolbarProps = {
 
 const Toolbar = ({ editor, className }: ToolbarProps) => {
 
-  const setLink = React.useCallback(() => {
+  const setLink = useCallback(() => {
     if (!editor) return null
     const previousUrl = editor.getAttributes('link').href
     const url = window.prompt('URL', previousUrl)

@@ -1,4 +1,4 @@
-import React from 'react'
+import {FormEvent} from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopNavbar from '@/components/fullComponents/DefaultNavbar'
@@ -44,7 +44,7 @@ const Reset = () => {
 
   const Matched = (password: string, password2: string) => password === password2;
   //It tells me that authSession not found, we need to take care of it later!
-  const sendResetPassword = async (event: React.FormEvent) => {
+  const sendResetPassword = async (event: FormEvent) => {
     event.preventDefault()
     setLoading(true)
     handlePassword(password)

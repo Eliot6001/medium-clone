@@ -12,22 +12,41 @@ import DeleteWarning from "@/components/modals/alertModal";
 import LoadingPage from "@/components/LoadingPage";
 import useProfile from "@/hooks/useProfileData";
 import { cn } from "@/lib/utils";
-import ProfileData from "@/components/fullComponents/profileData";
 import Avatar from "@/Avatar";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-export type Article = {
+interface Article {
+  // From both types
+  postid: string;
   title: string;
+  userid: string;
   content: string;
-  userid?: string;
-  deleted?: boolean;
-  // Added moderation fields:
+  deleted: boolean;
+  
+  // From first type
   reason?: string;
   removalBy?: string;
   removalId?: string;
   isCategorized?: boolean;
-};
+  user_profiles?: {
+    id?: string;
+    avatar_url?: string;
+    username?: string;
+  };
+
+  // From second type
+  rating?: number;
+  views?: number;
+  updated_at: string;
+  created_at: string;
+  deleted_at?: string;  // Made optional since it's not in the first type's required fields
+  article_ratings?: ArticleRating[];
+}
+
+interface ArticleRating {
+  sum: number;
+}
 
 const Article = () => {
   const { id } = useParams();
@@ -298,7 +317,7 @@ const Article = () => {
               >
                 <Avatar
                   size={28}
-                  url={article.user_profiles?.avatar_url}
+                  url={article.user_profiles?.avatar_url as string}
                   onPublicRoute
                 />
                 <p className="text-normal text-gray-500 dark:text-zinc-400">

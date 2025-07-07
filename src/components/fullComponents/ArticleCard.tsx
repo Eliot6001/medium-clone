@@ -1,12 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardContent } from "../ui/card";
-import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Avatar as AvatarWrapper } from "@/components/ui/avatar";
-
 import Avatar from "@/Avatar";
 import { format } from "date-fns";
 import { Clock, Heart, Eye } from "lucide-react";
+import { Suspense } from "react";
 
 interface ArticleCardProps {
   insideProfile?: boolean;
@@ -16,10 +14,9 @@ interface ArticleCardProps {
   authorId?: string;
   title: string;
   previewText: string;
-  imageUrl?: string;
   articleId?: string;
-  rating: number;
-  publishedAt?: Date;
+  rating?: number;
+  publishedAt?: string;
   views?: number;
 }
 
@@ -31,7 +28,6 @@ const ArticleCard = ({
   authorId = '',
   title,
   previewText,
-  imageUrl = "",
   articleId,
   rating = 0,
   publishedAt,
@@ -48,6 +44,7 @@ const ArticleCard = ({
       || "";
 
   return (
+    <Suspense>
     <Card
       className={cn(
         "shadow-md dark:shadow-zinc-800 shadow-zinc-300 rounded-lg overflow-hidden",
@@ -127,6 +124,7 @@ const ArticleCard = ({
         
       </CardContent>
     </Card>
+    </Suspense>
   );
 };
 

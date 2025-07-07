@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import supabase from './supabaseClient'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import Nav from './components/fullComponents/Nav'
 import {
   Card,
@@ -28,7 +28,6 @@ export default function SignUp() {
 
   const { toast } = useToast()
 
-  const navigate = useNavigate()
 
   if (session) return <Navigate to="/" />;
 

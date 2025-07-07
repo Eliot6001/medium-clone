@@ -7,16 +7,11 @@ import SuggestionCard from '@/components/fullComponents/SuggestionCard';
 import { toast } from '@/components/ui/use-toast';
 import axios from 'axios';
 import LoadingPage from '@/components/LoadingPage';
-import { usePopularArticles } from '@/hooks/usePopularArticles';
+import { usePopularArticles, Article } from '@/hooks/usePopularArticles';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-interface Article {
-  postid: string;
-  title: string;
-  content: string;
-  article_ratings?: { sum: number }[];
-}
+
 
 interface ProfilePayload {
   username: string;
@@ -105,9 +100,9 @@ const Profile = () => {
                   <ArticleCard
                     key={post.postid}
                     title={post.title}
-                    previewText={post.content.replace(/<[^>]*>/g, "").substring(0, 100)}              articleId={post.postid}
+                    previewText={post.content.replace(/<[^>]*>/g, "").substring(0, 100)}              
                     articleId={post.postid}
-                    rating={post.article_ratings?.[0]?.sum as number}
+                    rating={post?.rating as number}
                     className="bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 p-4 rounded-lg shadow hover:shadow-lg transition-all"
                     insideProfile
                   />
@@ -135,8 +130,9 @@ const Profile = () => {
                   title={article.title}
                   content={article.content}
                   ratings={article.interaction_count as number}
-                  date={new Date(article.postedat).toISOString().split('T')[0]}
+                  date={article.createdAt as string}
                   imageUrl={'https://placehold.co/600x400/EEE/31343C' as string}
+
                 />
               )) : <div className=" relative "> <LoadingPage className="top-50 left-50"/> </div> }
         </div>

@@ -1,4 +1,3 @@
-import { useLocation, useParams } from 'react-router-dom';
 import SignedInNavbar from '@/components/fullComponents/SignedInNavBar';
 import ArticleCard from '@/components/fullComponents/ArticleCard';
 import SuggestionCard from '@/components/fullComponents/SuggestionCard';
@@ -6,7 +5,6 @@ import ProfileData from '@/components/fullComponents/profileData';
 import { useProfile } from '../../hooks/useProfileData'; // Adjust path as needed
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import {toast} from '@/components/ui/use-toast';
 import { useSession } from '../../context/SupabaseContext';
 import {  History, SettingsIcon, X } from 'lucide-react';
 import IconLink from '../../components/fullComponents/IconLink';
@@ -17,10 +15,9 @@ import LoadingPage from '@/components/LoadingPage';
 const Profile = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const { id } = useParams();
   const {session} = useSession();
   const [posts, setPosts] = useState<Article[]>([]);
-  const [_, setFetching] = useState(true);
+  const [, setFetching] = useState(true);
   const { loading, username, website, avatarUrl, createdAt } = useProfile(session?.access_token);
   const { articles: popularArticles, loading: loadingPopular } = usePopularArticles(backendUrl, 15);
 
@@ -32,11 +29,8 @@ const Profile = () => {
           article.content = article.content.replace(/(<([^>]+)>)/gi, "").split(' ').slice(0,49).join(' ').concat("...");
         });
         setPosts(data.articles || []);
-      } catch (err) {
-        toast({
-          variant: 'destructive',
-          description: `there was an ${err}`
-        })
+      } catch {
+        console.log("No Articles.")
       } finally {
         setFetching(false);
       }
@@ -110,7 +104,7 @@ const Profile = () => {
               title={article.title}
               content={article.content}
               ratings={article.interaction_count as number}
-              date={new Date(article.postedat).toISOString().split('T')[0]}
+              date={article.createdAt as string}
               imageUrl={'https://placehold.co/600x400/EEE/31343C' as string}
             />
           )) : <div className=" relative "> <LoadingPage className="top-50 left-50"/> </div> }

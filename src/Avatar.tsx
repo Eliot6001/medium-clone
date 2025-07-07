@@ -45,7 +45,7 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
   const blobUrlsRef = useRef<string[]>([]);
   
   const { toast } = useToast();
-  const [cachedAvatars, setCachedAvatars] = useLocalStorage('cachedAvatars', {});
+  const [cachedAvatars, setCachedAvatars] = useLocalStorage<Record<string, string>>('cachedAvatars', {});
   
   // Download image with improved caching and error handling
   const downloadImage = useCallback(async (path: string) => {
@@ -58,7 +58,7 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
       setIsLoading(true);
       
       // Check cache first
-      if (cachedAvatars[path]) {
+      if (cachedAvatars && cachedAvatars[path]) {
         const imgUrl = createBlobUrlFromBase64(cachedAvatars[path]);
         if (imgUrl) {
           blobUrlsRef.current.push(imgUrl);
@@ -162,12 +162,18 @@ export default function Avatar({ url, size, onUpload, onPublicRoute = false, cla
         throw uploadError;
       }
 
-      onUpload(event, filePath);
+      if (onUpload) {
+        onUpload(event, filePath);
+      }
       
-    } catch (error: any) {
+    } catch (error: unknown) {
+      let message = 'Unknown error';
+      if (error instanceof Error) {
+        message = error.message;
+      }
       toast({
         variant: 'destructive',
-        description: `Upload failed: ${error.message || 'Unknown error'}`,
+        description: `Upload failed: ${message}`,
         duration: 2500
       });
     } finally {

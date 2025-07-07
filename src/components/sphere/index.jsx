@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import FIELDS from '@/components/fields';
 
@@ -229,9 +229,12 @@ export default function VibrationSphere({ isDark = true, disableForwarding = fal
   }, [isDark, disableForwarding]);
 
   return (
+    <Suspense>
     <div
       ref={mountRef}
       style={{ width: '100%', height: '600px', borderRadius: '16px', overflow: 'hidden' }}
     />
+    </Suspense>
   );
 }
+

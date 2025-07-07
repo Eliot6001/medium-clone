@@ -9,11 +9,6 @@ const SessionContext = createContext<{
   session: null,
 });
 
-//I gotta rewrite this  so it has a authManager 
-// That handles login, logout and session checks,
-// Should talk to third party auth, supabase
-//ensures userdata is synced 
-
 export const useSession = () => {
   const context = useContext(SessionContext);
   if (!context) {
@@ -30,7 +25,6 @@ export const SessionProvider = ({ children }: Props) => {
   
   useEffect(() => {
     const authStateListener = supabase.auth.onAuthStateChange(
-      //@ts-ignore
       async (_: any, session :any) => {
         setSession(session);
         setIsLoading(false);

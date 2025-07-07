@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Tiptap from "@/components/editor/tiptap";
 import SignedInNavbar from "@/components/fullComponents/SignedInNavBar";
 import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
@@ -40,6 +39,7 @@ const EditArticle = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { session } = useSession();
   const [loading, setLoading] = useState(true);
+  const RichTextEditor = lazy(() => import('@/components/editor/tiptap'));
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -147,14 +147,15 @@ const EditArticle = () => {
                 </FormItem>
               )}
             />
-
+          <Suspense>
             <FormField
               control={form.control}
               name="text"
               render={({ field }) => (
                 <FormItem className="flex-1 max-h-full">
+                  
                   <FormControl>
-                    <Tiptap
+                    <RichTextEditor
                       description={form.getValues("text")}
                       onChange={field.onChange}
                       setUploadImage={setUploadingImage}
@@ -164,7 +165,7 @@ const EditArticle = () => {
                 </FormItem>
               )}
             />
-
+          </Suspense>
             <Button type="submit" disabled={uploadingImage}>Update Article</Button>
           </form>
         </Form>

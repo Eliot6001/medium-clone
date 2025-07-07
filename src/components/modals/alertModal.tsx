@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
-import React from "react";
+import { FC, Suspense } from "react";
 
 type DeleteWarningProps = {
   onConfirm: () => void;
@@ -21,7 +21,7 @@ type DeleteWarningProps = {
   buttonClassName: string;
 };
 
-const DeleteWarning: React.FC<DeleteWarningProps> = ({
+const DeleteWarning: FC<DeleteWarningProps> = ({
   onConfirm,
   title,
   description,
@@ -30,6 +30,7 @@ const DeleteWarning: React.FC<DeleteWarningProps> = ({
 }) => {
   return (
     <>
+    <Suspense>
       <AlertDialog>
         <AlertDialogTrigger className={buttonClassName}>
           {buttonLabel}
@@ -45,6 +46,7 @@ const DeleteWarning: React.FC<DeleteWarningProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      </Suspense>
     </>
   );
 };

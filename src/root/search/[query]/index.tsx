@@ -4,20 +4,11 @@ import supabase from "@/supabaseClient";
 import { useSearchParams } from "react-router-dom";
 import ArticleCard from "@/components/fullComponents/ArticleCard";
 import LoadingPage from "@/components/LoadingPage";
-import SuggestionCard from '@/components/fullComponents/SuggestionCard'
+import Article from "@/root/articles/[id]";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 //This does the work a little,
 //Might wanna expand! 
-interface Article {
-  title: string;
-  content: string;
-  postid: string;
-  userid: string;
-  created_at: string;
-  author?: string;
-}
 
 
 const Search = () => {
@@ -30,9 +21,9 @@ const Search = () => {
     const fetchArticles = async () => {
       setLoading(true);
       const { data, error } = await supabase.rpc('search_posts_with_user_profile', {
-        query: query
+        q: query
       });
-    
+      console.log(query)
     
       if (error) {
         console.error('Error searching posts:', error);
@@ -46,6 +37,7 @@ const Search = () => {
 
     fetchArticles();
   }, [query]);
+
   if(loading) return <LoadingPage />
   return (
     <>
@@ -56,7 +48,6 @@ const Search = () => {
               Found Articles
             </h4>
           {articles.map((article: Article, index) => {
-          
           return (
             <ArticleCard
               key={article.postid || index}
@@ -65,10 +56,9 @@ const Search = () => {
               className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all max-w-3/4 w-3/4"
               title={article.title}
               previewText={article.content.replace(/<[^>]*>/g, "").substring(0, 100)}
-              authorName={article?.username }
-              authorImage={article?.avatar_url || "default.webp"}
+              authorName={article?.user_profiles?.username }
+              authorImage={article?.user_profiles?.avatar_url || "default.webp"}
               authorId={article.userid}
-              imageUrl={"https://placehold.co/600x400/EEE/31343C"}
               publishedAt={new Date(article.created_at).toLocaleDateString()}
               rating={article.rating || 0}
               views={article.views || 0}

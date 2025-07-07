@@ -3,13 +3,13 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card";
-import { Facebook, Github, Instagram, Twitter, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Avatar from "@/Avatar";
+/* 
 import { useState, useEffect, useMemo } from "react";
-
+import { Facebook, Github, Instagram, Twitter, X } from "lucide-react";
+ */
 interface ProfileData {
   pfpUrl?: string;
   username: string;
@@ -26,18 +26,18 @@ interface ProfileData {
 const ProfileData = ({
   pfpUrl,
   username,
-  socials = {},
+/*   socials = {}, */
   website,
   bio,
-  time_joined,
-  personal = false,
+ /*  time_joined, */
+/*   personal = false, */
 }: ProfileData) => {
-  const [Socialmedia, setSocialmedia] = useState<
+  /* Currently Commented Things are deprecated. */
+  /* const [Socialmedia, setSocialmedia] = useState<
     Partial<ProfileData["socials"]>
-  >({});
+  >({}); */
 
-  const time = time_joined ? new Date(time_joined).toLocaleDateString() : "Err";
-
+/* 
   useEffect(() => {
     if (!socials) return;
 
@@ -60,7 +60,7 @@ const ProfileData = ({
       const isDifferent = JSON.stringify(prev) !== JSON.stringify(updated);
       return isDifferent ? updated : prev;
     });
-  }, [socials]);
+  }, [socials]); */
 
   return (
     <Card className="w-full shadow-lg border border-gray-300 dark:border-zinc-600 bg-gray-200 dark:bg-zinc-700 rounded-lg overflow-hidden">
@@ -101,7 +101,7 @@ const ProfileData = ({
           </div>
         )}
       </CardContent>
-      <CardFooter className="px-6 py-4 bg-gray-100 dark:bg-zinc-700 flex items-center space-x-3">
+     {/*  <CardFooter className="px-6 py-4 bg-gray-100 dark:bg-zinc-700 flex items-center space-x-3">
         {Socialmedia?.ig && (
           <a
             href={Socialmedia.ig}
@@ -132,7 +132,7 @@ const ProfileData = ({
             <Github />
           </a>
         )}
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 };

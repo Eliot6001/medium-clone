@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useToast } from "@/components/ui/use-toast";
 import { useSession } from "../context/SupabaseContext";
@@ -140,7 +140,7 @@ export function useProfile(passedAccessToken?: string | null) { // Accept option
     // Add passedAccessToken to dependency array
   }, [session, passedAccessToken, setCachedProfile, cachedProfile, toast]);
 
-  return React.useMemo(
+  return useMemo(
     () => ({
       loading,
       username,

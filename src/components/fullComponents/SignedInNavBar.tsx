@@ -13,7 +13,7 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/context/SupabaseContext";
 import useProfile from "@/hooks/useProfileData";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Avatar from "../../Avatar";
 import { cn } from "@/lib/utils";
 import SearchButton from "./searchButton";
@@ -57,6 +57,7 @@ const SignedInNavbar = () => {
   }, [loading, avatarUrl]);
 
   return (
+    <Suspense>
     <header className="container flex h-20 w-full items-center px-4 md:px-6 bg-white dark:bg-zinc-950 shadow-sm">
       {/* Mobile Navigation */}
       <Sheet>
@@ -190,6 +191,7 @@ const SignedInNavbar = () => {
         </nav>
       </div>
     </header>
+    </Suspense>
   );
 };
 

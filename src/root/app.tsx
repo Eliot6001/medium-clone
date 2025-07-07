@@ -1,12 +1,10 @@
 
-import TopNavbar from "@/components/fullComponents/DefaultNavbar";
 import { Button } from "@/components/ui/button";
-import Image from "../assets/img.jpg"
 import Navbar from "@/components/fullComponents/Nav";
 import Sphere from '@/components/sphere'
 import { useTheme } from "@/components/theme-provider";
 import { AndroidToggle } from "@/components/ui/AndroidToggle";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 
 const Rootpage = () => {
@@ -31,7 +29,9 @@ const Rootpage = () => {
           </Button>
         </div>
         <div className="lg:flex flex-col hidden h-screen justify-center lg:h-full lg:w-full ml-auto relative p-3 space-y-2">
+          <Suspense>
           <Sphere isDark={darkMode.theme === "dark"} disableForwarding={disable}/>
+          </Suspense>
           <div className="space-x-6 flex"> 
             <p>Disable Forwarding <small> (-messing around mode-)</small>:</p>
             <AndroidToggle onCheckedChange={setToggle} checked={disable}/>
@@ -77,3 +77,4 @@ const Rootpage = () => {
 };
 
 export default Rootpage;
+

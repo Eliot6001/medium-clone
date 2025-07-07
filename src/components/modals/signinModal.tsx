@@ -1,5 +1,5 @@
 // src/components/modals/InterestsPickingModal.tsx
-import React, { useState, useEffect } from "react"
+import { useState, useEffect, Suspense, FC} from "react"
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ const FIELDS = [
 ]
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-export const InterestsPickingModal: React.FC = () => {
+export const InterestsPickingModal: FC = () => {
   const { isOpen, type, onClose, data } = useModal()
   console.log("Test", type)
   const isModalOpen = isOpen && type == "interestsModal"
@@ -59,6 +59,7 @@ export const InterestsPickingModal: React.FC = () => {
   
 
   return (
+    <Suspense>
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md lg:max-w-[50rem] overflow-hidden dark:bg-[#3a3a3afd] bg-[#e2e2e2] ">
         <DialogHeader className="pt-8 px-6">
@@ -97,5 +98,6 @@ export const InterestsPickingModal: React.FC = () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </Suspense>
   )
 }

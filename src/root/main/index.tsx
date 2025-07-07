@@ -1,12 +1,13 @@
 import SignedInNavbar from "@/components/fullComponents/SignedInNavBar";
 import ArticleCard from "@/components/fullComponents/ArticleCard";
 import SuggestionCard from "@/components/fullComponents/SuggestionCard";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { useSession } from "@/context/SupabaseContext";
 import { usePopularArticles } from "@/hooks/usePopularArticles";
 import LoadingPage from "@/components/LoadingPage";
+import Article from "../articles/[id]";
 
 const Main = () => {
   const [suggestedArticles, setsuggestedArticles] = useState([]);
@@ -47,13 +48,7 @@ const Main = () => {
             {session?.access_token ? "Recommendations" : "Latest Articles"}
           </h4>
             {!loading ? (
-            (suggestedArticles as Array<{
-              postid: string;
-              title: string;
-              content: string;
-              author: string;
-              postedat: string;
-            }>).map((article, index) => (
+            (suggestedArticles as Array<Article>).map((article, index) => (
               <ArticleCard
               key={article.postid || index}
               insideProfile={false}
@@ -69,12 +64,12 @@ const Main = () => {
                   .join(" ") + "..."
                 : ""
               }
-              authorName={article?.user_profiles.username}
-              authorImage={article?.user_profiles.avatar_url}
-              authorId={article?.user_profiles.id}
-              rating={article.rating_score}
+              authorName={article?.user_profiles?.username}
+              authorImage={article?.user_profiles?.avatar_url}
+              authorId={article?.user_profiles?.id}
+              rating={article.rating}
               publishedAt={article.created_at}
-              imageUrl={"https://placehold.co/600x400/EEE/31343C"}
+              
               />
             ))
             ) : (

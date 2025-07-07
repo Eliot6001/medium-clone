@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {toast} from '@/components/ui/use-toast';
 import { useSession } from '@/context/SupabaseContext';
+import Article from '../[id]';
 
 const DeletedArticles = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -78,21 +79,6 @@ const DeletedArticles = () => {
   );
 };
 
-interface ArticleRating {
-  sum: number;
-}
 
-interface Article {
-  postid: string;
-  title: string;
-  userid: string;
-  content: string;
-  rating?: number; 
-  updated_at: Date;
-  created_at: Date;
-  deleted: boolean;
-  deleted_at: Date;
-  article_ratings?: ArticleRating[];
-}
 
 export default DeletedArticles;

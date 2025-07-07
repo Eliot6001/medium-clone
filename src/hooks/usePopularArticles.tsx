@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-interface Article {
+export interface Article {
   postid: string;
   title: string;
   content: string;
