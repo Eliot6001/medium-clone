@@ -38,11 +38,13 @@ const ArticleCard = ({
   const handleCardClick = () => {
     navigate(`/articles/${articleId}`);
   };
-
-  const formattedDate = publishedAt && 
-     format(publishedAt, "HH:mm • MM/dd/yyyy")
-      || "";
-
+let formattedDate;
+if (publishedAt) {
+  const parsed = new Date(publishedAt);
+  if (!isNaN(parsed.getTime())) {
+    formattedDate = format(parsed, "HH:mm • MM/dd/yyyy");
+  }
+}
   return (
     <Suspense>
     <Card

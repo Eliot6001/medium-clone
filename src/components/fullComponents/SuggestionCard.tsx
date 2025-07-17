@@ -18,9 +18,13 @@ interface ArticleCardProps {
 const ArticleCard = ({ className = "", title = "",
    content = "", postid = "404", ratings = 0, date = 'not given' }: ArticleCardProps) => {
   const navigate = useNavigate();
-   const formattedDate = date && 
-       format(date, "HH:mm • MM/dd/yyyy")
-        || "";
+   let formattedDate;
+if (date) {
+  const parsed = new Date(date);
+  if (!isNaN(parsed.getTime())) {
+    formattedDate = format(parsed, "HH:mm • MM/dd/yyyy");
+  }
+}
   
   return (
     <Suspense>
