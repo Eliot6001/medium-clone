@@ -17,7 +17,7 @@ interface ProfilePayload {
   username: string;
   website: string;
   avatar_url: string;
-  updated_at: string;
+  created_at: string;
   posts: Article[];
 }
 
@@ -81,7 +81,7 @@ const Profile = () => {
             <ProfileData
               username={profile.username}
               pfpUrl={profile.avatar_url}
-              time_joined={profile.updated_at}
+              time_joined={profile.created_at}
               website={profile.website}
               personal={false}
             />
