@@ -399,7 +399,7 @@ const Article = () => {
                   </p>
                 </div>
               )}
-              <div className="flex items-start justify-start mt-10 ml-auto lg:space-x-5 space-y-5 flex-col lg:flex-row">
+              <div className="flex items-start justify-start mt-10 ml-auto lg:space-x-5 md:space-y-0 sm:space-y-5 flex-col lg:flex-row">
                 <div className="bg-gradient-to-r from-gray-200 to-gray-300 dark:from-zinc-800 dark:to-zinc-700 p-6 rounded-lg shadow-xl border border-gray-200 dark:border-zinc-800  w-full flex-1 transition-transform duration-200">
                   <Button
                     disabled={fetchedSummary}

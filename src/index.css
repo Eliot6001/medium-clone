@@ -81,7 +81,13 @@
   }
 }
 
+html {
+  background-image: linear-gradient(to bottom, #f4f4f5, #e4e4e7);
+}
 
+.dark html{
+  background-image: linear-gradient(to bottom, #18181b, #27272a);
+}
 
 @layer base {
   :root {
@@ -192,6 +198,7 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
+  background-image: linear-gradient(to bottom, #f4f4f5, #e4e4e7);
 }
 
 h1 {
@@ -202,7 +209,7 @@ h1 {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-image: linear-gradient(to bottom, #18181b, #27272a);
   }
 
   a:hover {
@@ -212,4 +219,11 @@ h1 {
   button {
     background-color: #f9f9f9;
   }
+}
+
+html.dark {
+    background-image: linear-gradient(to bottom, #18181b, #27272a);
+}
+html.light {
+ background-image: linear-gradient(to bottom, #f4f4f5, #e4e4e7);
 }

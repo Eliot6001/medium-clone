@@ -7,120 +7,112 @@ import { useLocation } from "react-router-dom";
 import { useSession } from "@/context/SupabaseContext";
 import { usePopularArticles } from "@/hooks/usePopularArticles";
 import LoadingPage from "@/components/LoadingPage";
-import Article from "../articles/[id]";
+import type Article from "../articles/[id]";
 
-const Main = () => {
-  const [suggestedArticles, setsuggestedArticles] = useState([]);
+const Main: React.FC = () => {
+  const [suggestedArticles, setSuggestedArticles] = useState<Article[]>([]);
   const { session } = useSession();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const location = useLocation();
   const { articles: popularArticles, loading: loadingPopular } =
     usePopularArticles(backendUrl, 30);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchSuggestions = async () => {
       try {
-        const config = session?.access_token
+        const headers = session?.access_token
           ? { headers: { Authorization: `Bearer ${session.access_token}` } }
           : {};
-  
-        const response = await axios.get(`${backendUrl}/recommendations/`, config);
-      
-        setsuggestedArticles(response.data.suggestions.flat());
+
+        const response = await axios.get(
+          `${backendUrl}/recommendations/`,
+          headers
+        );
+        setSuggestedArticles(response.data.suggestions.flat());
       } catch (error) {
         console.error("Error fetching recommendations:", error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchSuggestions();
   }, [backendUrl, location.pathname, session?.access_token]);
 
   return (
     <>
       <SignedInNavbar />
-      <main className="flex lg:space-x-16 container py-5 lg:flex-row flex-col apply-colors-primary bg-zinc-100 text-zinc-900 ">
-        {/* Center Column: Latest Articles */}
-        <div className="flex-1 lg:py-6 lg:px-12 py-4 lg:space-y-5 space-y-3 w-11/12">
-          <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight text-primary">
+      <main className="container mx-auto px-12 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Feed */}
+        <section className="lg:col-span-2 space-y-6">
+          <h2 className="text-2xl font-bold text-primary border-b-2 pb-2">
             {session?.access_token ? "Recommendations" : "Latest Articles"}
-          </h4>
-            {!loading ? (
-            (suggestedArticles as Array<Article>).map((article, index) => (
-              <ArticleCard
-              key={article.postid || index}
-              insideProfile={false}
-              articleId={article.postid}
-              className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
-              title={article.title}
-              previewText={
-                article?.content
-                ? article.content
-                  .replace(/(<([^>]+)>)/gi, "")
-                  .split(" ")
-                  .slice(0, 50)
-                  .join(" ") + "..."
-                : ""
-              }
-              authorName={article?.user_profiles?.username}
-              authorImage={article?.user_profiles?.avatar_url}
-              authorId={article?.user_profiles?.id}
-              rating={article.rating}
-              publishedAt={article.created_at}
-              
-              />
-            ))
-            ) : (
-            <div className=" relative ">
-              <LoadingPage className="top-50 left-50" />
-            </div>
-            )}
-          {!loading && suggestedArticles.length === 0 && (
-            <span className="w-full dark:border-zinc-700 border-zinc-300 border border-1 p-2 flex rounded-lg">
-              <p className="text-base">
-                There are no more articles,
-                <br />
-                How about getting creative?{" "}
-              </p>{" "}
-            </span>
-          )}
-        </div>
+          </h2>
 
-        {/* Right Column: Related Articles */}
-        <div className="w-11/12 lg:w-3/12 py-4 lg:space-y-5 space-y-3 ">
-          <h4 className="scroll-m-20 text-xl border-b border-b-0.5 pb-2 font-semibold tracking-tight text-primary">
-            Popular Articles
-          </h4>
-          {!loadingPopular ? (
-            popularArticles.map((article, index) => (
-              <SuggestionCard
-                key={index}
-                postid={article.postid}
-                className="bg-zinc-200 dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-all duration-150"
-                title={article.title}
-                content={article.content}
-                ratings={typeof article.rating === "number" ? article.rating : 0}
-                date={
-                  typeof article.postedat === "string"
-                    ? article.postedat.split("T")[0]
-                    : ""
-                }
-              />
-            ))
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <LoadingPage />
+            </div>
+          ) : suggestedArticles.length > 0 ? (
+            <div className="space-y-4">
+              {suggestedArticles.map((article, idx) => (
+                <ArticleCard
+                  key={article.postid || idx}
+                  articleId={article.postid}
+                  insideProfile={false}
+                  className="bg-white dark:bg-zinc-900 transition-shadow hover:shadow-lg p-6 rounded-2xl"
+                  title={article.title}
+                  previewText={article.content
+                    .replace(/<([^>]+)>/gi, "")
+                    .split(" ")
+                    .slice(0, 50)
+                    .join(" ") +
+                    "..."}
+                  authorName={article.user_profiles?.username}
+                  authorImage={article.user_profiles?.avatar_url}
+                  authorId={article.user_profiles?.id}
+                  rating={article.rating}
+                  publishedAt={article.created_at}
+                  views={article.views}
+                />
+              ))}
+            </div>
           ) : (
-            <div className=" relative ">
-              {" "}
-              <LoadingPage className="top-50 left-50" />{" "}
+            <p className="text-center text-muted py-16">
+              There are no more articles. Time to write some!
+            </p>
+          )}
+        </section>
+
+        {/* Right: Popular */}
+        <aside className="space-y-6">
+          <h2 className="text-xl font-semibold text-primary border-b pb-1">
+            Popular
+          </h2>
+          {loadingPopular ? (
+            <div className="flex justify-center py-6">
+              <LoadingPage />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {popularArticles.map((article, idx) => (
+                <SuggestionCard
+                  key={idx}
+                  postid={article.postid}
+                  className="bg-white dark:bg-zinc-900 transition-shadow hover:shadow-md p-4 rounded-xl"
+                  title={article.title}
+                  content={article.content}
+                  ratings={typeof article.rating === "number" ? article.rating : 0}
+                  date={typeof article.postedat === "string" ? article.postedat.split("T")[0] : ""}
+                />
+              ))}
             </div>
           )}
-        </div>
+        </aside>
       </main>
     </>
   );
 };
-
-
 
 export default Main;
